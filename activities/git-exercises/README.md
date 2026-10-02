@@ -15,6 +15,7 @@ My Git configuration uses my student ID number without the hyphen, as instructed
 ## Submitted Screenshots
 
 | Exercise No. | Exercise Title | Screenshot File |
+| --- | --- | --- |
 | 01 | master | `laguitao_IvanJay_01.png` |
 | 02 | Commit one file | `laguitao_IvanJay_02.png` |
 | 03 | Commit one file of two currently staged | `laguitao_IvanJay_03.png` |
@@ -38,6 +39,7 @@ My Git configuration uses my student ID number without the hyphen, as instructed
 | 21 | Change order of commits | `laguitao_IvanJay_21.png` |
 | 22 | Find commits that introduced swearwords | `laguitao_IvanJay_22.png` |
 | 23 | Find commit that has introduced bug | `laguitao_IvanJay_23.png` |
+
 
 ## Folder Contents
 
