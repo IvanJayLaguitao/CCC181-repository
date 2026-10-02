@@ -1,8 +1,10 @@
 # Git Exercises
 
-**Course:** CCC181
-**Student Name:** Laguitao, Ivan Jay
-**Student ID:** 20241026
+**Course:** CCC181  
+**Student Name:** Laguitao, Ivan Jay  
+**Student ID:** 20241026  
+
+
 
 ## Activity Description
 
