@@ -35,14 +35,6 @@ TICKETS = [
         "priority": "priority", "priority_reason": "Senior Citizen", 
         "priority_confirmed": True, "remind_ahead": 1, 
         "created_at": datetime.now(), "called_at": None, "completed_at": None
-    },
-    # 3. EMERGENCY
-    {
-        "ticket_number": "E-003", "name": "Carlo", "email": "carlo@school.edu", 
-        "service_id": 1, "reason": "Deep cut on hand", "status": "waiting", 
-        "priority": "emergency", "priority_reason": "Severe bleeding", 
-        "priority_confirmed": True, "remind_ahead": 0, 
-        "created_at": datetime.now(), "called_at": None, "completed_at": None
     }
 ]
 

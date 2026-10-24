@@ -1,37 +1,38 @@
-    ## Leo, the student waiting
+## Nurse Leo, the clinic staff member
 
-    > "I had a 3 PM class, but I had to sit in the clinic for half an hour for my checkup because I had a headache. I didn't want to leave because I was scared I'd lose my spot. But I was afraid of missing my class, so I left and just decided to come back early the next day." *(interview)*
+"I used to hate sitting in the clinic for half an hour just to get a checkup for my headache, so I'd leave and come back the next day. Now that I work the front desk, I see students doing the exact same thing every day. I want a system that lets them wait somewhere else so they don't miss their classes." (interview / observation)
 
-    | | |
-    | --- | --- |
-    | **Photo or sketch** | |
-    | **Age, role and background** | 21, 3rd-year student. Commutes daily and has a full schedule of classes. *(interview)* |
-    | **Goals** | 1. Get a consultation or medical certificate quickly. 2. Avoid missing or being late for class. 3. Know exactly how many people are ahead so he knows when to walk back to the clinic. |
-    | **Frustrations** | 1. Not knowing how long the wait will be. 2. The waiting area is often full and crowded. 3. Fear of losing his spot if he leaves to go to class, which forces him to waste time again the next day. |
-    | **Devices and context** | Uses a smartphone on campus Wi-Fi or mobile data, checking his phone while walking across campus or sitting in class. |
-    | **Tech comfort** | High. Uses mobile apps and social media every day. |
-    | **Accessibility needs** | Needs a simple, mobile-friendly layout that works on slow connections; large buttons and short, plain-language text. |
 
-    ### Scenario
+| | |
+| --- | --- |
+| **Photo or sketch** | |
+| **Age, role and background** | 21, 3rd-year Nursing student assigned as staff assistant. *(observation)* |
+| **Goals** | 1. Keep the clinic line moving quickly and fairly. 2. Ensure emergencies and PWDs are prioritized correctly. 3. Manage the queue without getting distracted from assisting patients. |
+| **Frustrations** | 1. The waiting area gets full and messy. 2. The current paper logbook is hard to read and track. 3. Patients constantly ask him how long the wait is, which slows down his work. |
+| **Devices and context** | Uses a desktop computer at the clinic front desk, often multitasking between checking patients, answering the phone, and updating records. |
+| **Tech comfort** | High. Uses web applications and hospital systems comfortably. |
+| **Accessibility needs** | Needs a clear, high-contrast dashboard with large buttons because he is often glancing at the screen quickly while talking to patients face-to-face. |
 
-    Leo wakes up with a bad headache. He needs to see the clinic doctor but has a 3:00 PM class. Instead of walking to the crowded clinic and sitting in the waiting room (and risking missing his class), he pulls out his phone and opens MSU-IIT KlinikaQ. He joins the queue for "Consultation & Treatment." He goes to his class but checks his phone. When it says he has 2 people ahead of him, he steps out of the classroom and walks to the clinic just in time for his turn.
+### Scenario
 
-    ### Top tasks in the app
+It is 3:00 PM and the clinic waiting area is full. Leo opens the KlinikaQ Staff Dashboard on the desktop. He sees a list of waiting tickets. He notices a senior citizen (P-002) and a student with a headache (N-001). He clicks the "Call Next" button for P-002, which updates the lobby screen and the patient's phone. He handles the visit, clicks "Served," and immediately moves to the next ticket, keeping the line moving efficiently.
 
-    | Task | Screen | Requirement ID |
-    | --- | --- | --- |
-    | Join the queue for Consultation | Join | FR-01 |
-    | Check how many people are ahead | My place | FR-02 |
-    | Choose how many people ahead trigger a reminder | My place | FR-03 |
-    | See when it is his turn | My place | FR-04 |
+### Top tasks in the app
 
-    ### What this means for my interface
+| Task | Screen | Requirement ID |
+| --- | --- | --- |
+| View the waiting list in order | Staff dashboard | FR-04 |
+| Call the next ticket | Staff dashboard | FR-04 |
+| Mark a ticket as served or no-show | Staff dashboard | FR-04 |
+| Confirm or reject a priority request | Staff dashboard | FR-05 |
 
-    1. Because Leo checks his phone while walking between classes, his ticket number and position must be the biggest and most visible text on the "My place" screen.
-    2. Because he uses mobile data that is often slow, pages must load fast and work without large images.
-    3. Because he may be called while still in class, the status must change by itself (without refreshing) so he knows exactly when to start walking to the clinic.
+### What this means for my interface
 
-    ---
+1. Because Leo is often multitasking between the front desk and patient care, the "Call Next" and "Serve" buttons must be large and easy to click at a glance.
+2. Because he needs to handle emergencies fairly, the staff dashboard must visually highlight Emergency and Priority tickets at the top of the list.
+3. Because he needs to keep the line moving quickly, the dashboard must load instantly and not require refreshing the page to see new patients who joined remotely.
+
+---
 
     ## Mark, the freshman needing a certificate
 
@@ -39,7 +40,7 @@
 
     | | |
     | --- | --- |
-    | **Photo or sketch** |  |
+    | **** |  |
     | **Age, role and background** | 18, 1st-year student. Needs a medical certificate for ROTC requirements. *(interview)* |
     | **Goals** | 1. Get his medical certificate for ROTC as fast as possible. 2. Avoid wasting his whole afternoon sitting in the clinic. 3. Know exactly when to come back so he doesn't lose his place in line. |
     | **Frustrations** | 1. Being stuck sitting in the clinic without knowing when his number will be called. 2. The long wait time. 3. Not being able to do other school requirements while waiting. |
