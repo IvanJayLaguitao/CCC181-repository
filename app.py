@@ -98,7 +98,7 @@ def join():
     flash(f"You joined the queue. Your ticket is {new_ticket_number}.", "success")
     return redirect(url_for("ticket", ticket_id=new_ticket_number))
 
-@app.route("/queue/<ticket_id>", methods=["GET", "POST"])
+@app.get("/queue/<ticket_id>")
 def ticket(ticket_id):
     ticket_index = next(
         (index for index, item in enumerate(TICKETS)
@@ -109,21 +109,6 @@ def ticket(ticket_id):
         abort(404)
 
     current_ticket = TICKETS[ticket_index]
-    if request.method == "POST":
-        action = request.form.get("action")
-        if action == "reminder" and current_ticket["status"] == "waiting":
-            remind_ahead = request.form.get("remind_ahead", type=int)
-            if remind_ahead is None or remind_ahead < 0:
-                flash("Enter a reminder threshold of zero or more.", "danger")
-            else:
-                current_ticket["remind_ahead"] = remind_ahead
-                flash("Your reminder preference was saved.", "success")
-        elif action == "cancel" and current_ticket["status"] == "waiting":
-            current_ticket["status"] = "cancelled"
-            flash("Your ticket has been cancelled.", "success")
-        else:
-            abort(400)
-        return redirect(url_for("ticket", ticket_id=ticket_id))
 
     service = next(
         (item for item in SERVICES if item["id"] == current_ticket["service_id"]),
@@ -134,7 +119,8 @@ def ticket(ticket_id):
 
     people_ahead = sum(
         1 for item in TICKETS[:ticket_index]
-        if item["status"] == "waiting"
+        if item["service_id"] == current_ticket["service_id"]
+        and item["status"] == "waiting"
     )
     return render_template(
         "ticket.html",
@@ -142,6 +128,44 @@ def ticket(ticket_id):
         service=service,
         people_ahead=people_ahead,
     )
+
+
+@app.post("/queue/<ticket_id>/leave")
+def leave_queue(ticket_id):
+    current_ticket = next(
+        (item for item in TICKETS if item["ticket_number"] == ticket_id),
+        None,
+    )
+    if current_ticket is None:
+        abort(404)
+
+    if current_ticket["status"] == "waiting":
+        current_ticket["status"] = "no-show"
+        flash("You have left the queue.", "success")
+    else:
+        flash("This ticket is no longer waiting in the queue.", "info")
+    return redirect(url_for("index"))
+
+
+@app.post("/queue/<ticket_id>/reminder")
+def update_reminder(ticket_id):
+    current_ticket = next(
+        (item for item in TICKETS if item["ticket_number"] == ticket_id),
+        None,
+    )
+    if current_ticket is None:
+        abort(404)
+
+    remind_ahead = request.form.get("remind_ahead", type=int)
+    if current_ticket["status"] != "waiting":
+        flash("Reminders are only available while your ticket is waiting.", "danger")
+    elif remind_ahead is None or remind_ahead < 0:
+        flash("Enter a reminder threshold of zero or more.", "danger")
+    else:
+        current_ticket["remind_ahead"] = remind_ahead
+        flash("Your reminder preference was saved.", "success")
+    return redirect(url_for("ticket", ticket_id=ticket_id))
+
 
 @app.route("/staff")
 def staff_dashboard():

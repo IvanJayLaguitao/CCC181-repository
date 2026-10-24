@@ -1,9 +1,58 @@
 {% extends "base.html" %}
 
-{% block title %}Ticket #{{ ticket_id }} · KlinikaQ{% endblock %}
+{% block title %}Ticket {{ ticket.ticket_number }} · KlinikaQ{% endblock %}
 
 {% block content %}
-  <h2>Ticket #{{ ticket_id }}</h2>
-  <p>This page was built from the URL <code>/queue/{{ ticket_id }}</code>.</p>
-  <p><a href="{{ url_for('index') }}">&larr; Back to the queue</a></p>
+<section class="ticket-page" aria-labelledby="ticket-heading">
+  <p class="ticket-greeting">Good day, {{ ticket.name }}</p>
+
+  <article class="card ticket-card">
+    <div class="card-body">
+      <div class="ticket-number-panel">
+        <span class="ticket-number-label">Your ticket is</span>
+        <h1 id="ticket-heading" class="display-1 fw-bold ticket-number">{{ ticket.ticket_number }}</h1>
+        <p class="ticket-service">Service: {{ service.name }}</p>
+      </div>
+
+      <div id="live-status" aria-live="polite">
+        <p class="ticket-status">
+          <span class="badge text-bg-{% if ticket.status == 'waiting' %}warning{% elif ticket.status == 'called' %}info{% elif ticket.status == 'served' or ticket.status == 'completed' %}success{% elif ticket.status == 'no-show' %}secondary{% else %}secondary{% endif %}">
+            {{ ticket.status }}
+          </span>
+        </p>
+        <p class="ticket-ahead">
+          {% if ticket.status == "waiting" and people_ahead == 0 %}
+            You're next!
+          {% elif ticket.status == "waiting" %}
+            {{ people_ahead }} {{ "person" if people_ahead == 1 else "people" }} ahead of you
+          {% else %}
+            Queue position is no longer available
+          {% endif %}
+        </p>
+      </div>
+
+      {% if ticket.status == "waiting" %}
+        <form class="ticket-reminder" method="post"
+              action="{{ url_for('update_reminder', ticket_id=ticket.ticket_number) }}">
+          <label for="remind-ahead">
+            Remind me when
+            <input id="remind-ahead" name="remind_ahead" type="number" min="0"
+                   value="{{ ticket.remind_ahead }}" required>
+            {{ "patient" if ticket.remind_ahead == 1 else "patients" }} are ahead of me
+          </label>
+          <button class="btn btn-primary ticket-reminder__save" type="submit">
+            Save reminder
+          </button>
+        </form>
+
+        <form method="post"
+              action="{{ url_for('leave_queue', ticket_id=ticket.ticket_number) }}">
+          <button class="btn btn-secondary ticket-cancel" type="submit">
+            Leave the queue
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </article>
+</section>
 {% endblock %}

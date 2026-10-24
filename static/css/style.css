@@ -97,22 +97,8 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 }
 
 .ticket-status {
-  margin: 0.75rem 0;
-  padding: 0.3rem 0.5rem;
-  background: #E8E5DD;
-  border: 2px solid var(--navy);
-  color: var(--navy);
-  font-size: 1.2rem;
+  margin: 0 0 0.5rem;
   text-align: center;
-}
-
-.ticket-status--cancelled {
-  background: #F3E3DE;
-  color: #7A2E20;
-}
-
-.ticket-status--completed {
-  background: #E5F0EE;
 }
 
 .ticket-reminder {
