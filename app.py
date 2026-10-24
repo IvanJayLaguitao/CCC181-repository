@@ -6,9 +6,10 @@ then open http://127.0.0.1:5000
 """
 from datetime import datetime
 
-from flask import Flask, render_template
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
 
 app = Flask(__name__)
+app.secret_key = "dev-only-change-me"
 
 # Sample data for the demo. A real app would load this from a database later.
 SERVICES = [
@@ -44,18 +45,13 @@ def index():
     # keyword arguments to the template as variables.
     return render_template("index.html", name="Ana", tickets=TICKETS)
 
+@app.route("/join")
+def join_form():
+    return render_template("join.html")
 
-@app.route("/queue/<ticket_id>")
-def ticket(ticket_id):
-    # I removed <int:> so it can accept strings like "N-001"
-    return render_template("ticket.html", ticket_id=ticket_id)
-
-
-@app.route("/hello")
-def hello():
-    # The plain-string version from the Routes slide.
-    return "Hello, CCC181!"
-
+@app.route("/staff")
+def staff_dashboard():
+    return "Staff dashboard coming soon"
 
 if __name__ == "__main__":
     # Lets you also start the app with: python app.py

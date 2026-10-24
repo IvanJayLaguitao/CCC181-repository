@@ -1,14 +1,11 @@
 {% extends "base.html" %}
 
-{% block content %}
-  <p>Hello, {{ name }}!</p>
+{% block title %}Home · KlinikaQ{% endblock %}
 
-  <h2>Tickets in the queue</h2>
-  <ul class="tickets">
-    {% for t in tickets %}
-      <li><a href="{{ url_for('ticket', ticket_id=t.ticket_number) }}">#{{ t.ticket_number }} - {{ t.name }}</a></li>
-    {% else %}
-      <li>The queue is empty.</li>
-    {% endfor %}
-  </ul>
+{% block content %}
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold text-primary">Welcome to KlinikaQ</h1>
+    <p class="lead mt-3">Join the MSU-IIT Clinic queue remotely and wait anywhere on campus.</p>
+    <a href="{{ url_for('join_form') }}" class="btn btn-primary btn-lg mt-3 px-5 py-3">Join the queue</a>
+</div>
 {% endblock %}
