@@ -417,15 +417,43 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .staff-queue-table th,
 .staff-queue-table td { padding: 0.7rem 0.65rem; }
 
-.staff-ticket-link {
-  color: var(--teal);
-  font-weight: 700;
-  text-decoration: none;
+.staff-reason-cell {
+  min-width: 12rem;
+  max-width: 22rem;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
-.staff-ticket-link:hover { text-decoration: underline; }
+.staff-ticket-number {
+  color: var(--navy-mid);
+  font-weight: 700;
+}
+
 .staff-priority-badge { display: block; width: fit-content; margin-top: 0.25rem; }
-.staff-row-actions { flex-wrap: nowrap; }
+.staff-priority-type {
+  background: #F0E4CC;
+  color: #594522;
+}
+.staff-priority-pending {
+  background: #FFF8E9;
+  color: #6D5427;
+}
+.staff-status-badge { min-width: 5.25rem; }
+.staff-status-waiting {
+  background: #F0E4CC;
+  color: #594522;
+}
+.staff-status-called {
+  background: var(--navy);
+  color: #FFFFFF;
+}
+.staff-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.staff-row-actions form { margin: 0; }
+.staff-row-actions .btn { white-space: nowrap; }
 .staff-row-actions form { flex: 0 0 auto; }
 
 .staff-empty-state {
@@ -871,21 +899,16 @@ footer {
   --bs-table-bg-state: #F1F5F9;
 }
 
-.staff-queue-table .text-bg-warning {
-  background: #E3EBF4 !important;
-  color: var(--navy-deep) !important;
+.staff-queue-table tbody tr.staff-priority-row > * {
+  --bs-table-bg: #F7F0E3;
 }
 
-.staff-queue-table .text-bg-info {
-  background: var(--navy) !important;
-  color: #FFFFFF !important;
+.staff-queue-table tbody tr.staff-priority-row:hover > * {
+  --bs-table-bg-state: #EFE3CC;
 }
-
-.staff-ticket-link { color: var(--navy-mid); }
 
 .staff-service-counts .badge,
-.staff-dashboard .staff-priority-badge.text-bg-warning,
-.staff-priority-badge.text-bg-light {
+.staff-dashboard .staff-priority-badge.text-bg-warning {
   background: var(--navy-soft) !important;
   color: var(--navy-deep) !important;
 }

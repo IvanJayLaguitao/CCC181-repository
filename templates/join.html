@@ -81,6 +81,7 @@
           <option value="normal" {% if form.get('priority', 'normal') == 'normal' %}selected{% endif %}>Normal</option>
           <option value="PWD" {% if form.get('priority') == 'PWD' %}selected{% endif %}>PWD (Person with Disability)</option>
           <option value="Senior Citizen" {% if form.get('priority') == 'Senior Citizen' %}selected{% endif %}>Senior Citizen</option>
+          <option value="Pregnant" {% if form.get('priority') == 'Pregnant' %}selected{% endif %}>Pregnant</option>
         </select>
         {% if errors and errors.priority %}
           <div id="priority-error" class="invalid-feedback">{{ errors.priority }}</div>

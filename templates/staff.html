@@ -110,45 +110,71 @@
                   <th scope="col">Number</th>
                   <th scope="col">Name</th>
                   <th scope="col">Service</th>
+                  <th scope="col">Reason</th>
                   <th scope="col">Status</th>
                   <th scope="col">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {% for item in queue %}
-                  <tr>
+                  <tr class="{% if item.priority != 'normal' %}staff-priority-row{% endif %}">
                     <td>
-                      <a class="staff-ticket-link" href="{{ url_for('ticket', ticket_id=item.ticket_number) }}">
-                        {{ item.ticket_number }}
-                      </a>
-                      {% if item.priority_confirmed %}
-                        <span class="badge text-bg-warning staff-priority-badge">Priority</span>
-                      {% elif item.priority != "normal" %}
-                        <span class="badge text-bg-light staff-priority-badge">Priority requested</span>
+                      <span class="staff-ticket-number">{{ item.ticket_number }}</span>
+                      {% if item.priority != "normal" %}
+                        <span class="badge staff-priority-badge staff-priority-type">
+                          {{ item.priority_reason or item.priority }}
+                        </span>
+                        {% if item.priority_confirmed %}
+                          <span class="badge text-bg-success staff-priority-badge">Confirmed</span>
+                        {% elif item.priority_rejected %}
+                          <span class="badge text-bg-secondary staff-priority-badge">Declined</span>
+                        {% else %}
+                          <span class="badge staff-priority-badge staff-priority-pending">Priority requested</span>
+                        {% endif %}
                       {% endif %}
                     </td>
                     <td>{{ item.name }}</td>
                     <td>{{ names[item.service_id] }}</td>
+                    <td class="staff-reason-cell">{{ item.reason }}</td>
                     <td>
-                      <span class="badge {% if item.status == 'waiting' %}text-bg-warning{% else %}text-bg-info{% endif %}">
+                      <span class="badge staff-status-badge staff-status-{{ item.status }}">
                         {{ item.status }}
                       </span>
                     </td>
                     <td>
                       <div class="staff-row-actions">
-                        {% if item.status == "called" %}
-                          <form method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='serve') }}">
-                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-                            <button class="btn btn-sm btn-success"
-                                    aria-label="Mark ticket {{ item.ticket_number }} as served">Serve</button>
-                          </form>
-                        {% endif %}
-                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='no-show') }}"
+                        <form class="staff-action-no-show" method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='no-show') }}"
                               data-confirm="Mark ticket {{ item.ticket_number }} as a no-show? This removes it from the active queue.">
                           {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
                           <button class="btn btn-sm btn-outline-danger"
                                   aria-label="Mark ticket {{ item.ticket_number }} as no-show">No-show</button>
                         </form>
+                        {% if item.priority != "normal"
+                              and not item.priority_confirmed
+                              and not item.priority_rejected %}
+                          <form class="staff-action-priority-confirm" method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='confirm-priority') }}">
+                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
+                            <button class="btn btn-sm btn-success"
+                                    aria-label="Confirm priority request for ticket {{ item.ticket_number }}">
+                              Confirm priority
+                            </button>
+                          </form>
+                          <form class="staff-action-priority-reject" method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='reject-priority') }}"
+                                data-confirm="Decline the priority request for ticket {{ item.ticket_number }}?">
+                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
+                            <button class="btn btn-sm btn-outline-danger"
+                                    aria-label="Reject priority request for ticket {{ item.ticket_number }}">
+                              Reject
+                            </button>
+                          </form>
+                        {% endif %}
+                        {% if item.status == "called" %}
+                          <form class="staff-action-serve" method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='serve') }}">
+                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
+                            <button class="btn btn-sm btn-success"
+                                    aria-label="Mark ticket {{ item.ticket_number }} as served">Serve</button>
+                          </form>
+                        {% endif %}
                       </div>
                     </td>
                   </tr>

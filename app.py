@@ -21,18 +21,36 @@ SERVICES = [
 TICKETS = [
     # 1. NORMAL
     {
-        "ticket_number": "N-001", "name": "Ana", "email": "ana@school.edu", 
-        "service_id": 1, "reason": "Headache and Fever", "status": "waiting", 
-        "priority": "normal", "priority_reason": None, 
-        "priority_confirmed": False, "remind_ahead": 3, 
+        "ticket_number": "N-001", "name": "Ana", "email": "ana@school.edu",
+        "service_id": 1, "reason": "Headache and Fever", "status": "waiting",
+        "priority": "normal", "priority_reason": None,
+        "priority_confirmed": False, "priority_rejected": False,
+        "remind_ahead": 3,
         "created_at": datetime.now(), "called_at": None, "completed_at": None
     },
     # 2. PRIORITY
     {
-        "ticket_number": "P-002", "name": "Ben", "email": "ben@school.edu", 
-        "service_id": 2, "reason": "Toothache", "status": "waiting", 
-        "priority": "PWD", "priority_reason": "PWD", 
-        "priority_confirmed": True, "remind_ahead": 1, 
+        "ticket_number": "P-002", "name": "Ben", "email": "ben@school.edu",
+        "service_id": 2, "reason": "Toothache", "status": "waiting",
+        "priority": "PWD", "priority_reason": "PWD",
+        "priority_confirmed": True, "priority_rejected": False,
+        "remind_ahead": 1,
+        "created_at": datetime.now(), "called_at": None, "completed_at": None
+    },
+    {
+        "ticket_number": "P-003", "name": "Carlo", "email": "carlo@school.edu",
+        "service_id": 4, "reason": "Dental checkup", "status": "waiting",
+        "priority": "Senior Citizen", "priority_reason": "Senior Citizen",
+        "priority_confirmed": False, "priority_rejected": False,
+        "remind_ahead": 2,
+        "created_at": datetime.now(), "called_at": None, "completed_at": None
+    },
+    {
+        "ticket_number": "P-004", "name": "Dina", "email": "dina@school.edu",
+        "service_id": 1, "reason": "Prenatal consultation", "status": "waiting",
+        "priority": "Pregnant", "priority_reason": "Pregnant",
+        "priority_confirmed": False, "priority_rejected": False,
+        "remind_ahead": 2,
         "created_at": datetime.now(), "called_at": None, "completed_at": None
     }
 ]
@@ -66,7 +84,7 @@ def join():
         errors["service_id"] = "Choose a service."
     if not reason:
         errors["reason"] = "Enter a reason for your visit."
-    if priority not in ["normal", "PWD", "Senior Citizen"]:
+    if priority not in ["normal", "PWD", "Senior Citizen", "Pregnant"]:
         errors["priority"] = "Invalid priority."
         
     if errors:
@@ -76,7 +94,7 @@ def join():
     # Generate the next sequential number
     number = int(TICKETS[-1]["ticket_number"].split("-")[1]) + 1 if TICKETS else 1
     
-    # Decide the prefix (N for Normal, P for PWD/Senior)
+    # Use a separate ticket prefix for priority requests.
     prefix = "N" if priority == "normal" else "P"
     new_ticket_number = f"{prefix}-{number:03d}"
 
@@ -91,6 +109,7 @@ def join():
         "priority": priority, 
         "priority_reason": priority if priority != "normal" else None, 
         "priority_confirmed": False,
+        "priority_rejected": False,
         "remind_ahead": 3, 
         "created_at": datetime.now(), 
         "called_at": None, 
@@ -240,20 +259,41 @@ def staff_action(ticket_id, action):
         "serve": (("called",), "served"),
         "no-show": (("waiting", "called"), "no-show"),
     }
-    transition = transitions.get(action)
+    priority_actions = {
+        "confirm-priority": True,
+        "reject-priority": False,
+    }
     current_ticket = next(
         (item for item in TICKETS if item["ticket_number"] == ticket_id),
         None,
     )
-    if current_ticket is None or transition is None:
+    if current_ticket is None:
         abort(404)
 
-    allowed_statuses, new_status = transition
-    if current_ticket["status"] not in allowed_statuses:
-        abort(409)
+    if action in priority_actions:
+        if (current_ticket["status"] not in ("waiting", "called")
+                or current_ticket["priority"] == "normal"
+                or current_ticket["priority_confirmed"]
+                or current_ticket.get("priority_rejected", False)):
+            abort(409)
 
-    current_ticket["status"] = new_status
-    flash(f"Ticket {ticket_id} marked {new_status}.", "info")
+        approved = priority_actions[action]
+        current_ticket["priority_confirmed"] = approved
+        current_ticket["priority_rejected"] = not approved
+        decision = "confirmed" if approved else "declined"
+        flash(f"Ticket {ticket_id} priority request {decision}.", "info")
+    else:
+        transition = transitions.get(action)
+        if transition is None:
+            abort(404)
+
+        allowed_statuses, new_status = transition
+        if current_ticket["status"] not in allowed_statuses:
+            abort(409)
+
+        current_ticket["status"] = new_status
+        flash(f"Ticket {ticket_id} marked {new_status}.", "info")
+
     selected_service = request.form.get("service_id", type=int)
     if selected_service is not None:
         return redirect(url_for("staff_dashboard", service_id=selected_service))
