@@ -22,6 +22,6 @@
 
 **Works well:** The "Call Next" button is the biggest element on the screen, and the "Now Serving" box is front and center. This perfectly follows Leo's rule that he needs to manage the queue quickly while talking to patients.
 
-**Problem:** The waiting list shows the names and reasons, but it doesn't clearly highlight who is an Emergency or Priority in the list itself. If an Emergency ticket is #4 on the list, Leo might miss it (visibility of system status).
+**Problem:** The waiting list shows the names and reasons, but it doesn't clearly highlight who is a Priority (PWD/Senior) in the list itself.
 
 **Change:** I will add a colored badge next to the ticket numbers in the waiting list table so Leo can spot them instantly.

@@ -32,7 +32,7 @@ It is 3:00 PM and the clinic waiting area is full. Leo opens the KlinikaQ Staff 
 2. Because he needs to handle emergencies fairly, the staff dashboard must visually highlight Emergency and Priority tickets at the top of the list.
 3. Because he needs to keep the line moving quickly, the dashboard must load instantly and not require refreshing the page to see new patients who joined remotely.
 
----
+
 
     ## Mark, the freshman needing a certificate
 
@@ -62,7 +62,7 @@ It is 3:00 PM and the clinic waiting area is full. Leo opens the KlinikaQ Staff 
 
     ### What this means for my interface
 
-    1. Because Mark is running multiple errands and doesn't want to waste time sitting, the "My place" screen must clearly show his exact position in line at a glance.
-    2. Because he only has a short time between errands, the "Join" form must be quick and simple (3 steps or fewer) so he can get his ticket in under a minute.
+    1. Because Mark is a student and doesn't want to waste time sitting, the "My place" screen must clearly show his exact position in line at a glance.
+    2. Because he only has a short time, the "Join" form must be quick and simple (3 steps or fewer) so he can get his ticket in under a minute.
     3. Because he might be anywhere around campus, the app must clearly show how many patients are ahead of him and send a reminder when it is almost his turn, so he knows exactly when to head back to the clinic.
 
