@@ -4,6 +4,7 @@
 
 {% block content %}
 <section class="ticket-page" aria-labelledby="ticket-heading">
+  <span class="page-kicker">Your place in the queue</span>
   <p class="ticket-greeting">Good day, {{ ticket.name }}</p>
 
   <article class="card ticket-card">
@@ -47,7 +48,8 @@
           </form>
 
           <form method="post"
-                action="{{ url_for('leave_queue', ticket_id=ticket.ticket_number) }}">
+                action="{{ url_for('leave_queue', ticket_id=ticket.ticket_number) }}"
+                data-confirm="Leave the queue? You will lose your place in line.">
             <button class="btn btn-secondary ticket-cancel" type="submit">
               Leave the queue
             </button>

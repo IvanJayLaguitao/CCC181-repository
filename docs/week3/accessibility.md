@@ -8,9 +8,14 @@ category.
 
 | Screen | URL | Accessibility score |
 | --- | --- | ---: |
+| Home | `/` | 100/100 |
 | Join | `/join` | 100/100 |
 | My place | `/queue/P-002` | 100/100 |
 | Staff | `/staff` | 100/100 |
+
+### Home
+
+![Lighthouse Accessibility score for Home: 100](./accessibility-assets/home-score.png)
 
 ### Join
 
@@ -24,7 +29,7 @@ category.
 
 ![Lighthouse Accessibility score for Staff: 100](./accessibility-assets/staff-score.png)
 
-All three final Lighthouse reports passed the automated Accessibility audits.
+All four final Lighthouse reports passed the automated Accessibility audits.
 Lighthouse notes that automated checks cover only a subset of accessibility
 issues, so the keyboard and manual checks below were also performed.
 
@@ -68,3 +73,18 @@ the Staff filter button and My place leave button needed darker foreground/
 background colors, the reminder input needed a larger tap target, and the Join
 service error needed an `aria-describedby` association. The favicon was also
 added to remove the browser’s missing-icon 404.
+
+## Jakob Nielsen’s usability heuristics
+
+| Heuristic | Application in KlinikaQ |
+| --- | --- |
+| Visibility of system status | My place updates the written status and people-ahead count live; Staff shows now serving, the next ticket, and waiting counts. |
+| Match between the system and the real world | The interface uses clinic language such as “ticket,” “service,” “waiting,” and “people ahead,” with a plain-language three-step home guide. |
+| User control and freedom | Persistent main navigation and the skip link provide clear ways to move around; leaving the queue is an explicit action with a confirmation. |
+| Consistency and standards | All screens share the same navy palette, navigation, button styles, focus indicators, and familiar form/table patterns. |
+| Error prevention | Required fields are validated, duplicate joins are blocked, and leaving the queue or marking a no-show requires confirmation. |
+| Recognition rather than recall | Form labels and hints, current queue status, the selected service, next-ticket details, and visible action labels keep needed information on screen. |
+| Flexibility and efficiency of use | Staff can filter by service and call the next eligible ticket directly; responsive layout keeps patient tasks usable on a phone. |
+| Aesthetic and minimalist design | The layered navy theme, restrained cards, clear hierarchy, and focused primary actions reduce visual noise while keeping key queue information prominent. |
+| Help users recognize, diagnose, and recover from errors | Join errors are summarized with links to the affected fields; field values remain available to correct, and action outcomes appear as flash messages. |
+| Help and documentation | The home guide explains the three steps, field hints explain form choices, urgent needs are directed to clinic staff, and Staff access limitations are stated clearly. |

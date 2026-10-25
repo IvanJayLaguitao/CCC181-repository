@@ -58,8 +58,10 @@ def join():
     errors = {}
     if not name:
         errors["name"] = "Enter your name."
-    if "@" not in email:
-        errors["email"] = "Enter a valid email address."
+    email_local_part, separator, email_domain = email.rpartition("@")
+    if (not email_local_part or separator != "@" or email_domain != "msuiit.edu"
+            or email.count("@") != 1 or any(char.isspace() for char in email)):
+        errors["email"] = "Use your @msuiit.edu email address."
     if service_id not in [s["id"] for s in SERVICES]:
         errors["service_id"] = "Choose a service."
     if not reason:

@@ -3,9 +3,29 @@
 {% block title %}Home · KlinikaQ{% endblock %}
 
 {% block content %}
-<div class="text-center py-5">
-    <h1 class="display-4 fw-bold text-primary">Welcome to KlinikaQ</h1>
-    <p class="lead mt-3">Join the MSU-IIT Clinic queue remotely and wait anywhere on campus.</p>
-    <a href="{{ url_for('join_form') }}" class="btn btn-primary btn-lg mt-3 px-5 py-3">Join the queue</a>
-</div>
+
+<section class="home-hero" aria-labelledby="home-heading">
+  <div class="home-hero__copy">
+    <span class="home-kicker">MSU-IIT Clinic</span>
+    <h1 id="home-heading">Care, without the wait-room wait.</h1>
+    <p class="home-lead">
+      Join the clinic queue from wherever you are on campus. Keep your place
+      while you study, work, or take a break.
+    </p>
+    <a href="{{ url_for('join_form') }}" class="btn btn-primary btn-lg home-cta">
+      Join the queue <span aria-hidden="true">&rarr;</span>
+    </a>
+    <p class="home-reassurance">It only takes a minute. Your place updates live.</p>
+  </div>
+  <aside class="home-guide" aria-labelledby="home-guide-heading">
+    <span class="home-guide__icon" aria-hidden="true">Q</span>
+    <h2 id="home-guide-heading">A simpler way to wait</h2>
+    <ol>
+      <li><span>01</span> Choose a clinic service</li>
+      <li><span>02</span> Get your ticket number</li>
+      <li><span>03</span> Follow your place from anywhere</li>
+    </ol>
+    <p class="home-help">For urgent medical needs, please go directly to clinic staff.</p>
+  </aside>
+</section>
 {% endblock %}

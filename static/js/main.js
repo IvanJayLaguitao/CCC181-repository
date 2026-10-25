@@ -1,6 +1,13 @@
 // Served at /static/js/main.js and linked from templates/base.html.
 console.log("KlinikaQ starter app loaded");
 
+document.addEventListener("submit", (event) => {
+  const confirmation = event.target.dataset.confirm;
+  if (confirmation && !window.confirm(confirmation)) {
+    event.preventDefault();
+  }
+}, true);
+
 const joinForm = document.getElementById("join-form");
 if (joinForm) {
   joinForm.addEventListener("submit", (event) => {

@@ -35,7 +35,8 @@
           <p class="now-serving-name">{{ current_ticket.name }}</p>
           <p class="now-serving-service">{{ names[current_ticket.service_id] }}</p>
           <div class="now-serving-actions">
-            <form method="post" action="{{ url_for('staff_action', ticket_id=current_ticket.ticket_number, action='no-show') }}">
+            <form method="post" action="{{ url_for('staff_action', ticket_id=current_ticket.ticket_number, action='no-show') }}"
+                  data-confirm="Mark ticket {{ current_ticket.ticket_number }} as a no-show? This removes it from the active queue.">
               {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
               <button class="btn btn-sm btn-outline-danger w-100"
                       aria-label="Mark ticket {{ current_ticket.ticket_number }} as no-show">
@@ -142,7 +143,8 @@
                                     aria-label="Mark ticket {{ item.ticket_number }} as served">Serve</button>
                           </form>
                         {% endif %}
-                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='no-show') }}">
+                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.ticket_number, action='no-show') }}"
+                              data-confirm="Mark ticket {{ item.ticket_number }} as a no-show? This removes it from the active queue.">
                           {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
                           <button class="btn btn-sm btn-outline-danger"
                                   aria-label="Mark ticket {{ item.ticket_number }} as no-show">No-show</button>

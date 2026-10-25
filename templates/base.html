@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}YourApp{% endblock %}</title>
+  <title>{% block title %}KlinikaQ · MSU-IIT Clinic{% endblock %}</title>
   <link rel="icon" type="image/svg+xml"
         href="{{ url_for('static', filename='images/favicon.svg') }}">
   <link rel="stylesheet"
@@ -13,7 +13,8 @@
 <body class="d-flex flex-column min-vh-100">
   <a class="visually-hidden-focusable" href="#main">Skip to main content</a>
 
-  <nav class="navbar navbar-expand-md bg-primary" data-bs-theme="dark">
+  <nav class="navbar navbar-expand-md site-navbar" data-bs-theme="dark"
+       aria-label="Main navigation">
     <div class="container">
       <a class="navbar-brand" href="{{ url_for('index') }}">KlinikaQ</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -38,7 +39,7 @@
     </div>
   </nav>
 
-  <main id="main" class="container my-4 flex-grow-1{% if request.endpoint == 'staff_dashboard' %} staff-main-container{% endif %}">
+  <main id="main" class="container my-4 flex-grow-1{% if request.endpoint == 'staff_dashboard' %} staff-main-container{% endif %}" tabindex="-1">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
         <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
