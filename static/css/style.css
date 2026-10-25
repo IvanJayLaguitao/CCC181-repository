@@ -167,6 +167,11 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
+
+  border-radius: 8px; /* Adjust the number to make it more or less round */
+  padding: 1rem;      /* Adds space inside so text doesn't touch the edge */
+  background-color: var(--navy); /* Needed so you can see the rounded box */
+
 }
 
 .staff-heading {
@@ -177,7 +182,7 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .staff-queue-heading h2,
 .staff-call-panel h2 {
   margin: 0;
-  color: var(--navy);
+  color: var(--white);
   font-weight: 700;
 }
 

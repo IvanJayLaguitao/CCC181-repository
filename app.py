@@ -130,6 +130,28 @@ def ticket(ticket_id):
     )
 
 
+@app.get("/queue/<ticket_id>/status.json")
+def ticket_status(ticket_id):
+    current_ticket = next(
+        (item for item in TICKETS if item["ticket_number"] == ticket_id),
+        None,
+    )
+    if current_ticket is None:
+        abort(404)
+
+    ticket_index = next(
+        index for index, item in enumerate(TICKETS)
+        if item is current_ticket
+    )
+    ahead = sum(
+        1 for index, item in enumerate(TICKETS)
+        if item["service_id"] == current_ticket["service_id"]
+        and item["status"] == "waiting"
+        and index < ticket_index
+    )
+    return {"status": current_ticket["status"], "ahead": ahead}
+
+
 @app.post("/queue/<ticket_id>/leave")
 def leave_queue(ticket_id):
     current_ticket = next(
