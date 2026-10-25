@@ -32,7 +32,8 @@
         <div class="mb-3">
         <label for="service_id" class="form-label">Service</label>
         <select id="service_id" name="service_id" required
-                class="form-select {% if errors and errors.service_id %}is-invalid{% endif %}">
+                class="form-select {% if errors and errors.service_id %}is-invalid{% endif %}"
+                {% if errors and errors.service_id %}aria-describedby="service_id-error"{% endif %}>
           <option value="">Choose a service…</option>
           {% for s in services %}
             <option value="{{ s.id }}"
@@ -40,7 +41,7 @@
           {% endfor %}
         </select>
         {% if errors and errors.service_id %}
-          <div class="invalid-feedback">{{ errors.service_id }}</div>
+          <div id="service_id-error" class="invalid-feedback">{{ errors.service_id }}</div>
         {% endif %}
       </div>
 

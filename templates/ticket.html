@@ -39,7 +39,7 @@
               Remind me when
               <input id="remind-ahead" name="remind_ahead" type="number" min="0"
                      value="{{ ticket.remind_ahead }}" required>
-              {{ "patient" if ticket.remind_ahead == 1 else "patients" }} are ahead of me
+              {{ "patient is" if ticket.remind_ahead == 1 else "patients are" }} ahead of me
             </label>
             <button class="btn btn-primary ticket-reminder__save" type="submit">
               Save reminder

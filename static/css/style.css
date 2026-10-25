@@ -44,6 +44,34 @@ h2 { color: var(--teal); }
 
 code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 
+:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+}
+
+.btn:focus-visible,
+.navbar-toggler:focus-visible,
+.btn-close:focus-visible,
+.form-control:focus-visible,
+.form-select:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px var(--card);
+}
+
+.btn,
+.nav-link,
+.navbar-toggler,
+.btn-close,
+.form-control,
+.form-select {
+  min-height: 44px;
+}
+
+.btn-close {
+  min-width: 44px;
+}
+
 .ticket-page {
   max-width: 420px;
   margin: 0 auto;
@@ -116,6 +144,7 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 
 .ticket-reminder input {
   width: 4.5rem;
+  min-height: 44px;
   margin: 0 0.25rem;
   padding: 0.15rem;
   border: 1px solid #8A8A8A;
@@ -140,7 +169,7 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .ticket-cancel {
   width: 100%;
   padding: 0.65rem;
-  background: #777;
+  background: #747474;
   border: 2px solid var(--navy);
   font-weight: 700;
 }
@@ -182,7 +211,7 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .staff-queue-heading h2,
 .staff-call-panel h2 {
   margin: 0;
-  color: var(--white);
+  color: var(--paper);
   font-weight: 700;
 }
 
@@ -196,6 +225,26 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+}
+
+.staff-heading .staff-eyebrow,
+.staff-queue-heading .staff-panel-label {
+  color: #E0E6EE;
+}
+
+.staff-call-panel h2 {
+  color: var(--navy);
+}
+
+.staff-call-panel .staff-panel-label {
+  color: var(--teal);
+}
+
+.staff-panel-label {
+  padding: 0;
+  background: transparent;
+  border-radius: 0;
+  font-size: 0.75rem;
 }
 
 .staff-access-note {
@@ -219,6 +268,11 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
   flex: 0 0 auto;
   margin: 0;
   font-weight: 600;
+}
+
+.staff-service-filter .btn-outline-secondary {
+  color: #515A6A;
+  border-color: #515A6A;
 }
 
 .staff-layout {
@@ -317,6 +371,10 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .staff-queue-count {
   color: var(--staff-muted);
   font-size: 0.85rem;
+}
+
+.staff-queue-heading .staff-queue-count {
+  color: #E0E6EE;
 }
 
 .staff-queue-table {

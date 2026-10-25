@@ -14,8 +14,7 @@
 
   <form class="staff-service-filter" method="get" action="{{ url_for('staff_dashboard') }}">
     <label class="form-label" for="service-filter">Queue view</label>
-    <select class="form-select" id="service-filter" name="service_id"
-            onchange="this.form.submit()">
+    <select class="form-select" id="service-filter" name="service_id">
       <option value="">All services</option>
       {% for service in services %}
         <option value="{{ service.id }}"
@@ -24,13 +23,13 @@
         </option>
       {% endfor %}
     </select>
-    <noscript><button class="btn btn-outline-secondary mt-2" type="submit">Apply filter</button></noscript>
+    <button class="btn btn-outline-secondary" type="submit">Apply filter</button>
   </form>
 
   <div class="staff-layout">
     <aside class="staff-sidebar" aria-label="Queue controls and service counts">
       <section class="staff-panel now-serving">
-        <p class="staff-panel-label">Now serving</p>
+        <h2 class="staff-panel-label" id="now-serving-heading">Now serving</h2>
         {% if current_ticket %}
           <p class="now-serving-number">{{ current_ticket.ticket_number }}</p>
           <p class="now-serving-name">{{ current_ticket.name }}</p>
