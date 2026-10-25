@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Ticket {{ ticket.ticket_number }} · KlinikaQ{% endblock %}
+
+{% block content %}
+<section class="ticket-page" aria-labelledby="ticket-heading">
+  <span class="page-kicker">Your place in the queue</span>
+  <p class="ticket-greeting">Good day, {{ ticket.name }}</p>
+
+  <article class="card ticket-card">
+    <div class="card-body">
+      <div class="ticket-number-panel">
+        <span class="ticket-number-label">Your ticket is</span>
+        <h1 id="ticket-heading" class="display-1 fw-bold ticket-number">{{ ticket.ticket_number }}</h1>
+        <p class="ticket-service">Service: {{ service.name }}</p>
+      </div>
+
+      <div id="live-status" aria-live="polite">
+        <p class="ticket-status">
+          <span id="ticket-status" class="badge text-bg-{% if ticket.status == 'waiting' %}warning{% elif ticket.status == 'called' %}info{% elif ticket.status == 'served' or ticket.status == 'completed' %}success{% elif ticket.status == 'no-show' %}secondary{% else %}secondary{% endif %}">
+            {{ ticket.status }}
+          </span>
+        </p>
+        <p class="ticket-ahead" id="ticket-ahead">
+          {% if ticket.status == "waiting" and people_ahead == 0 %}
+            You're next!
+          {% elif ticket.status == "waiting" %}
+            {{ people_ahead }} {{ "person" if people_ahead == 1 else "people" }} ahead of you
+          {% else %}
+            Queue position is no longer available
+          {% endif %}
+        </p>
+      </div>
+
+      {% if ticket.status == "waiting" %}
+        <div id="ticket-actions">
+          <form class="ticket-reminder" method="post"
+                action="{{ url_for('update_reminder', ticket_id=ticket.ticket_number) }}">
+            <label for="remind-ahead">
+              Remind me when
+              <input id="remind-ahead" name="remind_ahead" type="number" min="0"
+                     value="{{ ticket.remind_ahead }}" required>
+              {{ "patient is" if ticket.remind_ahead == 1 else "patients are" }} ahead of me
+            </label>
+            <button class="btn btn-primary ticket-reminder__save" type="submit">
+              Save reminder
+            </button>
+          </form>
+
+          <form method="post"
+                action="{{ url_for('leave_queue', ticket_id=ticket.ticket_number) }}"
+                data-confirm="Leave the queue? You will lose your place in line.">
+            <button class="btn btn-secondary ticket-cancel" type="submit">
+              Leave the queue
+            </button>
+          </form>
+        </div>
+      {% endif %}
+    </div>
+  </article>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const statusUrl = {{ url_for('ticket_status', ticket_id=ticket.ticket_number)|tojson }};
+  async function refreshStatus() {
+    try {
+      const res = await fetch(statusUrl, { cache: "no-store" });
+      if (!res.ok) return;
+      const data = await res.json();
+      const statusBadge = document.getElementById("ticket-status");
+      const aheadMessage = document.getElementById("ticket-ahead");
+      if (!statusBadge || !aheadMessage) return;
+
+      statusBadge.textContent = data.status;
+      statusBadge.classList.remove(
+        "text-bg-warning", "text-bg-info", "text-bg-success", "text-bg-secondary"
+      );
+      const badgeColor = {
+        waiting: "text-bg-warning",
+        called: "text-bg-info",
+        served: "text-bg-success",
+        completed: "text-bg-success",
+        "no-show": "text-bg-secondary"
+      }[data.status] || "text-bg-secondary";
+      statusBadge.classList.add(badgeColor);
+
+      if (data.status !== "waiting") {
+        aheadMessage.textContent = "Queue position is no longer available";
+        const ticketActions = document.getElementById("ticket-actions");
+        if (ticketActions) ticketActions.hidden = true;
+      } else if (data.ahead === 0) {
+        aheadMessage.textContent = "You're next!";
+      } else {
+        aheadMessage.textContent =
+          `${data.ahead} ${data.ahead === 1 ? "person" : "people"} ahead of you`;
+      }
+    } catch (err) {
+      console.warn("Could not refresh status", err);
+    }
+  }
+  refreshStatus();
+  setInterval(refreshStatus, 10000);
+</script>
+{% endblock %}
