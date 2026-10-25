@@ -17,7 +17,9 @@ Built with Flask for **CCC181 Week 2: Git, GitHub & Flask Foundations**.
 - **My Place page.** See your current position in the queue and your ticket status.
 - **Reminder notification.** Get notified when people are ahead of you (3 by default), so you can step out and come back in time.
 - **Two queue levels.** *Priority* (critical cases, senior citizens, and persons with disabilities) and *Normal* (routine visits). Priority is confirmed by clinic staff, and critical status is assigned by staff only.
-- **Staff controls.** Call the next ticket, skip, complete, or cancel tickets.
+- **Staff controls.** Call the next ticket, mark called tickets served, or record a no-show. Confirmed priority tickets appear first, and the dashboard shows waiting counts for each service.
+
+> **Staff access is currently open:** the `/staff` dashboard has no login protection yet. Staff authentication will be added in a later week.
 
 
 ## Project structure
@@ -42,10 +44,11 @@ CCC181-repository/
 | URL | View function | What you see |
 |---|---|---|
 | `/` | `index()` | "Hello, Ana!" and a list of tickets, rendered with `index.html` |
-| `/queue/<int:ticket_id>` | `ticket()` | A page for that ticket, e.g. `/queue/12` |
+| `/queue/<ticket_id>` | `ticket()` | A page for that ticket, e.g. `/queue/N-001` |
+| `/staff` | `staff_dashboard()` | Open staff dashboard with service filters and queue controls |
 | `/hello` | `hello()` | The plain text "Hello, CCC181!" |
 
-Try `/queue/abc`: the `int` converter only accepts numbers, so Flask returns a 404.
+Unknown ticket IDs return a 404.
 
 ## Getting started
 

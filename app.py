@@ -167,9 +167,73 @@ def update_reminder(ticket_id):
     return redirect(url_for("ticket", ticket_id=ticket_id))
 
 
-@app.route("/staff")
+@app.get("/staff")
 def staff_dashboard():
-    return "Staff dashboard coming soon"
+    selected_service = request.args.get("service_id", type=int)
+    if selected_service is not None and selected_service not in {
+        service["id"] for service in SERVICES
+    }:
+        abort(404)
+
+    queue = [
+        (index, item) for index, item in enumerate(TICKETS)
+        if item["status"] in ("waiting", "called")
+        and (selected_service is None or item["service_id"] == selected_service)
+    ]
+    queue.sort(key=lambda entry: (not entry[1]["priority_confirmed"], entry[0]))
+    next_ticket = next(
+        (item for _, item in queue if item["status"] == "waiting"),
+        None,
+    )
+    current_ticket = next(
+        (item for _, item in queue if item["status"] == "called"),
+        None,
+    )
+    waiting_counts = {
+        service["id"]: sum(
+            1 for item in TICKETS
+            if item["service_id"] == service["id"] and item["status"] == "waiting"
+        )
+        for service in SERVICES
+    }
+    names = {service["id"]: service["name"] for service in SERVICES}
+    return render_template(
+        "staff.html",
+        queue=[item for _, item in queue],
+        services=SERVICES,
+        names=names,
+        selected=selected_service,
+        next_ticket=next_ticket,
+        current_ticket=current_ticket,
+        waiting_counts=waiting_counts,
+    )
+
+
+@app.post("/staff/tickets/<ticket_id>/<action>")
+def staff_action(ticket_id, action):
+    transitions = {
+        "call": (("waiting",), "called"),
+        "serve": (("called",), "served"),
+        "no-show": (("waiting", "called"), "no-show"),
+    }
+    transition = transitions.get(action)
+    current_ticket = next(
+        (item for item in TICKETS if item["ticket_number"] == ticket_id),
+        None,
+    )
+    if current_ticket is None or transition is None:
+        abort(404)
+
+    allowed_statuses, new_status = transition
+    if current_ticket["status"] not in allowed_statuses:
+        abort(409)
+
+    current_ticket["status"] = new_status
+    flash(f"Ticket {ticket_id} marked {new_status}.", "info")
+    selected_service = request.form.get("service_id", type=int)
+    if selected_service is not None:
+        return redirect(url_for("staff_dashboard", service_id=selected_service))
+    return redirect(url_for("staff_dashboard"))
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -36,7 +36,7 @@
     </div>
   </nav>
 
-  <main id="main" class="container my-4 flex-grow-1">
+  <main id="main" class="container my-4 flex-grow-1{% if request.endpoint == 'staff_dashboard' %} staff-main-container{% endif %}">
     {% with messages = get_flashed_messages(with_categories=true) %}
       {% for category, message in messages %}
         <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
