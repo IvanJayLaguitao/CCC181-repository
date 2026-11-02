@@ -269,6 +269,23 @@ def staff_dashboard():
         waiting_counts=waiting_counts,
     )
 
+@app.cli.command("seed")
+def seed():
+    """Add the starting services if they are not there yet."""
+    starting = [
+        ("Consultation & Treatment", 15), 
+        ("Dental Services", 20), 
+        ("Medical Certificate", 5), 
+        ("Laboratory Tests", 10)
+    ]
+    
+    for name, minutes in starting:
+        exists = db.session.scalar(db.select(Service).filter_by(service_name=name))
+        if exists is None:
+            db.session.add(Service(service_name=name, avg_minutes=minutes))
+            
+    db.session.commit()
+    print("Services are ready.")
 
 @app.post("/staff/tickets/<ticket_id>/<action>")
 def staff_action(ticket_id, action):
@@ -316,6 +333,6 @@ def staff_action(ticket_id, action):
     if selected_service is not None:
         return redirect(url_for("staff_dashboard", service_id=selected_service))
     return redirect(url_for("staff_dashboard"))
-
+    
 if __name__ == "__main__":
     app.run(debug=True)
