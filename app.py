@@ -1,3 +1,22 @@
+import os
+from dotenv import load_dotenv
+from flask import Flask, abort, flash, redirect, render_template, request, url_for
+from flask_migrate import Migrate
+from sqlalchemy import func
+from sqlalchemy.exc import IntegrityError
+
+from models import db, User, Service, Ticket
+
+load_dotenv()
+
+app = Flask(__name__)
+app.secret_key = "dev-only-change-me"
+app.config["SQLALCHEMY_DATABASE_URI"] = os.environ["DATABASE_URL"]
+app.config["SQLALCHEMY_ECHO"] = os.environ.get("SQLALCHEMY_ECHO") == "1"
+
+db.init_app(app)
+migrate = Migrate(app, db)
+
 """CCC181 Week 2: a "Hello, Flask" starter app.
 
 Run it with:
@@ -7,7 +26,6 @@ then open http://127.0.0.1:5000
 from datetime import datetime
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
 
-app = Flask(__name__)
 app.secret_key = "dev-only-change-me"
 
 SERVICES = [
