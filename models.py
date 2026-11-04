@@ -30,6 +30,10 @@ class Service(db.Model):
     avg_minutes: Mapped[int] = mapped_column(default=10, server_default="10")
     active: Mapped[bool] = mapped_column(default=True, server_default=true())
     tickets: Mapped[list["Ticket"]] = relationship(back_populates="service")
+    
+    __table_args__ = (
+        CheckConstraint("avg_minutes > 0", name="ck_services_avg_minutes"),
+    )
 
 
 class Ticket(db.Model):

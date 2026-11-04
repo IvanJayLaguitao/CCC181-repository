@@ -81,12 +81,12 @@ def join():
         priority_reason = priority_choice
 
     errors = {}
-    if not name:
-        errors["name"] = "Enter your name."
-    if "@" not in email:
-        errors["email"] = "Enter a valid email address."
-
+    if not name or len(name) > 80:
+        errors["name"] = "Enter your name (up to 80 characters)."
+    if "@" not in email or len(email) > 120:
+        errors["email"] = "Enter a valid email address (up to 120 characters)."
     service = db.session.get(Service, service_id)
+    
     if not service or not service.active:
         errors["service_id"] = "Choose a valid service."
     if not reason:
