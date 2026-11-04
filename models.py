@@ -38,6 +38,9 @@ class Ticket(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     priority_type: Mapped[str] = mapped_column(String(1), default="N", server_default="N")
     priority_reason: Mapped[str | None] = mapped_column(String(50))
+
+    priority_confirmed: Mapped[bool] = mapped_column(default=False, server_default="false")
+
     ticket_number: Mapped[int] = mapped_column(default=1)    
     reason: Mapped[str] = mapped_column(String(255))
     status: Mapped[str] = mapped_column(String(20), default="waiting", server_default="waiting")
