@@ -21,10 +21,12 @@ It is 3:00 PM and the clinic waiting area is full. Leo opens the KlinikaQ Staff 
 
 | Task | Screen | Requirement ID |
 | --- | --- | --- |
-| View the waiting list in order | Staff dashboard | FR-04 |
-| Call the next ticket | Staff dashboard | FR-04 |
+| View the waiting list in order | Staff dashboard | FR-03 |
+| Call the next ticket | Staff dashboard | FR-03 |
 | Mark a ticket as served or no-show | Staff dashboard | FR-04 |
-| Confirm or reject a priority request | Staff dashboard | FR-05 |
+| Confirm or reject a priority request | Staff dashboard | FR-10 |
+
+
 
 ### What this means for my interface
 
@@ -34,35 +36,36 @@ It is 3:00 PM and the clinic waiting area is full. Leo opens the KlinikaQ Staff 
 
 
 
-    ## Mark, the freshman needing a certificate
+## Mark, the freshman needing a certificate
 
-    > "I went to the clinic 2 PM because I needed a medical certificate for ROTC. They gave me a number and I just sat there. I couldn't leave because I didn't know what time my number would be called." *(interview)*
+> "I went to the clinic 2 PM because I needed a medical certificate for ROTC. They gave me a number and I just sat there. I couldn't leave because I didn't know what time my number would be called." *(interview)*
 
-    | | |
-    | --- | --- |
-    | **** |  |
-    | **Age, role and background** | 18, 1st-year student. Needs a medical certificate for ROTC requirements. *(interview)* |
-    | **Goals** | 1. Get his medical certificate for ROTC as fast as possible. 2. Avoid wasting his whole afternoon sitting in the clinic. 3. Know exactly when to come back so he doesn't lose his place in line. |
-    | **Frustrations** | 1. Being stuck sitting in the clinic without knowing when his number will be called. 2. The long wait time. 3. Not being able to do other school requirements while waiting. |
-    | **Devices and context** | Uses a smartphone while walking around the campus, usually juggling multiple errands and requirements. |
-    | **Tech comfort** | High. Very comfortable with mobile web apps. |
-    | **Accessibility needs** | Needs clear, readable text on a small phone screen and a fast-loading page so he doesn't waste his mobile data. |
+| | |
+| --- | --- |
+| **Age, role and background** | 18, 1st-year student. Needs a medical certificate for ROTC requirements. *(interview)* |
+| **Goals** | 1. Get his medical certificate for ROTC as fast as possible. 2. Avoid wasting his whole afternoon sitting in the clinic. 3. Know exactly when to come back so he doesn't lose his place in line. |
+| **Frustrations** | 1. Being stuck sitting in the clinic without knowing when his number will be called. 2. The long wait time. 3. Not being able to do other school requirements while waiting. |
+| **Devices and context** | Uses a smartphone while walking around the campus, usually juggling multiple errands and requirements. |
+| **Tech comfort** | High. Very comfortable with mobile web apps. |
+| **Accessibility needs** | Needs clear, readable text on a small phone screen and a fast-loading page so he doesn't waste his mobile data. |
 
-    ### Scenario
+### Scenario
 
-    Mark needs to submit his ROTC medical certificate by the end of the day. He goes to the clinic at 2:00 PM and sees a long line. Instead of sitting down and waiting for an hour, he opens KlinikaQ on his phone. He joins the "Physical Fitness Certification" queue and gets ticket N-002. He decides to walk to the registrar's office to finish another errand. When KlinikaQ alerts him that he is next, he walks back to the clinic, gets his certificate, and makes it to his next class on time.
+Mark needs to submit his ROTC medical certificate by the end of the day. He goes to the clinic at 2:00 PM and sees a long line. Instead of sitting down and waiting for an hour, he opens KlinikaQ on his phone. He joins the "Physical Fitness Certification" queue and gets ticket N-002. He decides to walk to the registrar's office to finish another errand. When KlinikaQ alerts him that he is next, he walks back to the clinic, gets his certificate, and makes it to his next class on time.
 
-    ### Top tasks in the app
 
-    | Task | Screen | Requirement ID |
-    | --- | --- | --- |
-    | Join the queue for Physical Fitness Certification | Join | FR-01 |
-    | Check how many people are ahead | My place | FR-02 |
-    | See when it is his turn | My place | FR-04 |
+| Task | Screen | Requirement ID |
+| --- | --- | --- |
+| Join the queue for Physical Fitness Certification | Join | FR-01 |
+| Request priority status (PWD/Senior) | Join | FR-09 |
+| Check how many people are ahead | My place | FR-02 |
+| See when it is his turn | My place | FR-04 |
 
-    ### What this means for my interface
 
-    1. Because Mark is a student and doesn't want to waste time sitting, the "My place" screen must clearly show his exact position in line at a glance.
-    2. Because he only has a short time, the "Join" form must be quick and simple (3 steps or fewer) so he can get his ticket in under a minute.
-    3. Because he might be anywhere around campus, the app must clearly show how many patients are ahead of him and send a reminder when it is almost his turn, so he knows exactly when to head back to the clinic.
+
+### What this means for my interface
+
+1. Because Mark is a student and doesn't want to waste time sitting, the "My place" screen must clearly show his exact position in line at a glance.
+2. Because he only has a short time, the "Join" form must be quick and simple (3 steps or fewer) so he can get his ticket in under a minute.
+3. Because he might be anywhere around campus, the app must clearly show how many patients are ahead of him and send a reminder when it is almost his turn, so he knows exactly when to head back to the clinic.
 

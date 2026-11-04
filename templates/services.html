@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block title %}Manage Services · KlinikaQ{% endblock %}
+{% block content %}
+<h1>Manage Services</h1>
+
+<table class="table">
+  <thead>
+    <tr><th>Name</th><th>Avg Minutes</th><th>Active</th><th>Tickets</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    {% for s in services %}
+    <tr>
+      <td>{{ s.service_name }}</td>
+      <td>{{ s.avg_minutes }}</td>
+      <td>{{ "Yes" if s.active else "No" }}</td>
+      <td>{{ s.tickets|length }}</td>
+      <td>
+        <form method="post" action="{{ url_for('service_delete', service_id=s.id) }}" data-confirm="Delete {{ s.service_name }}?">
+          <button class="btn btn-sm btn-danger">Delete</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Add a Service</h2>
+<form method="post" action="{{ url_for('service_create') }}">
+  <input name="name" placeholder="Service name" required>
+  <input name="avg_minutes" type="number" placeholder="Minutes" required>
+  <button class="btn btn-primary" type="submit">Add Service</button>
+</form>
+{% endblock %}

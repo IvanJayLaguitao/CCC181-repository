@@ -1,20 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}Ticket {{ ticket.ticket_number }} · KlinikaQ{% endblock %}
+{% block title %}Ticket {{ ticket.priority_type }}-{{ "%03d"|format(ticket.ticket_number) }} · KlinikaQ{% endblock %}
 
 {% block content %}
 <section class="ticket-page" aria-labelledby="ticket-heading">
   <span class="page-kicker">Your place in the queue</span>
-  <p class="ticket-greeting">Good day, {{ ticket.name }}</p>
+  <p class="ticket-greeting">Good day, {{ ticket.user.name }}</p>
 
   <article class="card ticket-card">
     <div class="card-body">
       <div class="ticket-number-panel">
         <span class="ticket-number-label">Your ticket is</span>
-        <h1 id="ticket-heading" class="display-1 fw-bold ticket-number">{{ ticket.ticket_number }}</h1>
-        <p class="ticket-service">Service: {{ service.name }}</p>
+        <h1 id="ticket-heading" class="display-1 fw-bold ticket-number">
+          {{ ticket.priority_type }}-{{ "%03d"|format(ticket.ticket_number) }}
+        </h1>
+        <p class="ticket-service">Service: {{ service.service_name }}</p>
       </div>
-
       <div id="live-status" aria-live="polite">
         <p class="ticket-status">
           <span id="ticket-status" class="badge text-bg-{% if ticket.status == 'waiting' %}warning{% elif ticket.status == 'called' %}info{% elif ticket.status == 'served' or ticket.status == 'completed' %}success{% elif ticket.status == 'no-show' %}secondary{% else %}secondary{% endif %}">
@@ -22,10 +23,10 @@
           </span>
         </p>
         <p class="ticket-ahead" id="ticket-ahead">
-          {% if ticket.status == "waiting" and people_ahead == 0 %}
+          {% if ticket.status == "waiting" and ahead == 0 %}
             You're next!
           {% elif ticket.status == "waiting" %}
-            {{ people_ahead }} {{ "person" if people_ahead == 1 else "people" }} ahead of you
+            {{ ahead }} {{ "person" if ahead == 1 else "people" }} ahead of you
           {% else %}
             Queue position is no longer available
           {% endif %}
@@ -34,25 +35,24 @@
 
       {% if ticket.status == "waiting" %}
         <div id="ticket-actions">
-          <form class="ticket-reminder" method="post"
-                action="{{ url_for('update_reminder', ticket_id=ticket.ticket_number) }}">
+          <!-- Show the form, JS will hide it if ahead is 0 -->
+          <form class="ticket-reminder" method="post" action="{{ url_for('update_reminder', ticket_id=ticket.id)}}" {% if ahead == 0 %}style="display: none;"{% endif %}>
             <label for="remind-ahead">
               Remind me when
-              <input id="remind-ahead" name="remind_ahead" type="number" min="0"
-                     value="{{ ticket.remind_ahead }}" required>
+              <input id="remind-ahead" name="remind_ahead" type="number" min="0" value="{{ ticket.remind_ahead }}" required>
               {{ "patient is" if ticket.remind_ahead == 1 else "patients are" }} ahead of me
             </label>
             <button class="btn btn-primary ticket-reminder__save" type="submit">
-              Save reminder
+                Save reminder
             </button>
           </form>
-
+          
           <form method="post"
-                action="{{ url_for('leave_queue', ticket_id=ticket.ticket_number) }}"
+                action="{{ url_for('leave_queue', ticket_id=ticket.id) }}"
                 data-confirm="Leave the queue? You will lose your place in line.">
-            <button class="btn btn-secondary ticket-cancel" type="submit">
-              Leave the queue
-            </button>
+           <button class="btn btn-secondary ticket-cancel" type="submit">
+            Leave the queue
+           </button>   
           </form>
         </div>
       {% endif %}
@@ -62,45 +62,49 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="application/json" id="ticket-status-url">
+  {{ url_for('ticket_status', ticket_id=ticket.id)|tojson }}
+</script>
 <script>
-  const statusUrl = {{ url_for('ticket_status', ticket_id=ticket.ticket_number)|tojson }};
+  const statusUrl = JSON.parse(document.getElementById("ticket-status-url").textContent);
+  
   async function refreshStatus() {
     try {
-      const res = await fetch(statusUrl, { cache: "no-store" });
+      const res = await fetch(statusUrl + "?t=" + new Date().getTime(), { cache: "no-store" });
       if (!res.ok) return;
+      
       const data = await res.json();
       const statusBadge = document.getElementById("ticket-status");
       const aheadMessage = document.getElementById("ticket-ahead");
+      const reminderForm = document.querySelector(".ticket-reminder");
+      
       if (!statusBadge || !aheadMessage) return;
 
+      // Update badge
       statusBadge.textContent = data.status;
-      statusBadge.classList.remove(
-        "text-bg-warning", "text-bg-info", "text-bg-success", "text-bg-secondary"
+      statusBadge.className = "badge text-bg-" + (
+        data.status === "waiting" ? "warning" : 
+        data.status === "called" ? "info" : 
+        data.status === "served" ? "success" : "secondary"
       );
-      const badgeColor = {
-        waiting: "text-bg-warning",
-        called: "text-bg-info",
-        served: "text-bg-success",
-        completed: "text-bg-success",
-        "no-show": "text-bg-secondary"
-      }[data.status] || "text-bg-secondary";
-      statusBadge.classList.add(badgeColor);
 
+      // Update message and form visibility
       if (data.status !== "waiting") {
         aheadMessage.textContent = "Queue position is no longer available";
         const ticketActions = document.getElementById("ticket-actions");
         if (ticketActions) ticketActions.hidden = true;
       } else if (data.ahead === 0) {
         aheadMessage.textContent = "You're next!";
+        if (reminderForm) reminderForm.style.display = "none"; // Hide form
       } else {
-        aheadMessage.textContent =
-          `${data.ahead} ${data.ahead === 1 ? "person" : "people"} ahead of you`;
+        aheadMessage.textContent = `${data.ahead} ${data.ahead === 1 ? "person" : "people"} ahead of you`;
+        if (reminderForm) reminderForm.style.display = "block"; // Show form if it was hidden
       }
     } catch (err) {
       console.warn("Could not refresh status", err);
     }
   }
+
   refreshStatus();
-  setInterval(refreshStatus, 10000);
-</script>
-{% endblock %}
+  setInterval(refreshStatus, 5000); 
+</script>{% endblock %}
