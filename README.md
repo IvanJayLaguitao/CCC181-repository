@@ -95,5 +95,8 @@ do not use it in production.
 - The app uses seeded demonstration patients and a development-only Flask
   secret key. It is not ready for real patient information or production use.
 
+> **Staff access is currently open:** the `/staff` dashboard has no login protection yet. Staff authentication will be added in Week 11.
+
+
 ## Requirements
 See [docs/requirements.md](docs/requirements.md) for the full list of functional and non-functional requirements.

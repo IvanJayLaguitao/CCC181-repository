@@ -1,11 +1,10 @@
 import os
 from datetime import datetime, timezone, timedelta
-from sqlalchemy import case
+from sqlalchemy import case, func
+from sqlalchemy.exc import IntegrityError
 from dotenv import load_dotenv
 from flask import Flask, abort, flash, redirect, render_template, request, url_for
 from flask_migrate import Migrate
-from sqlalchemy import func
-from sqlalchemy.exc import IntegrityError
 
 from models import db, User, Service, Ticket
 
@@ -19,22 +18,19 @@ migrate = Migrate(app, db)
 
 PH_TIME = timezone(timedelta(hours=8))
 
-
 @app.template_filter("local")
 def local_time(value):
     return value.astimezone(PH_TIME).strftime("%b %d, %I:%M %p") if value else ""
 
+# --- HELPERS ---
 
 def all_services():
     return db.session.scalars(db.select(Service).order_by(Service.service_name)).all()
 
+def active_services():
+    return db.session.scalars(db.select(Service).filter_by(active=True).order_by(Service.service_name)).all()
 
 def queue_order_clause():
-    """Return the canonical queue ordering used by the patient, JSON, and staff views.
-
-    Confirmed priority tickets float to the front of the active queue, while
-    unconfirmed priority tickets stay in the regular queue sorted by creation time.
-    """
     return (
         case(
             ((Ticket.priority_type == "P") & (Ticket.priority_confirmed.is_(True)), 0),
@@ -44,36 +40,29 @@ def queue_order_clause():
         Ticket.id.asc(),
     )
 
-
-def waiting_queue_for_service(service_id):
-    return db.session.scalars(
-        db.select(Ticket)
-        .where(Ticket.service_id == service_id)
-        .where(Ticket.status == "waiting")
-        .order_by(*queue_order_clause())
-    ).all()
-
-
 def waiting_position_for_ticket(ticket):
     if ticket.status != "waiting":
         return None
-
-    queue = waiting_queue_for_service(ticket.service_id)
+    queue = db.session.scalars(
+        db.select(Ticket)
+        .where(Ticket.service_id == ticket.service_id)
+        .where(Ticket.status == "waiting")
+        .order_by(*queue_order_clause())
+    ).all()
     for index, queued_ticket in enumerate(queue):
         if queued_ticket.id == ticket.id:
             return index + 1
     return None
 
+# --- ROUTES ---
 
 @app.route("/")
 def index():
     return render_template("index.html")
 
-
 @app.get("/join")
 def join_form():
-    return render_template("join.html", services=all_services(), form={})
-
+    return render_template("join.html", services=active_services(), form={})
 
 @app.post("/join")
 def join():
@@ -98,22 +87,20 @@ def join():
         errors["email"] = "Enter a valid email address."
 
     service = db.session.get(Service, service_id)
-    if not service:
+    if not service or not service.active:
         errors["service_id"] = "Choose a valid service."
     if not reason:
         errors["reason"] = "Enter a reason for your visit."
 
     if errors:
         flash("Please fix the highlighted fields.", "danger")
-        return render_template("join.html", services=all_services(), form=form, errors=errors), 400
+        return render_template("join.html", services=active_services(), form=form, errors=errors), 400
 
-    # Find or create user
     user = db.session.scalar(db.select(User).filter_by(email=email))
     if not user:
         user = User(name=name, email=email)
         db.session.add(user)
 
-    # Generate daily ticket number
     count_today = db.session.scalar(
         db.select(func.count(Ticket.id)).where(
             func.date(Ticket.created_at.op('AT TIME ZONE')('Asia/Manila')) ==
@@ -122,7 +109,6 @@ def join():
     )
     next_number = (count_today or 0) + 1
 
-    # Create ticket
     ticket = Ticket(
         user=user,
         service=service,
@@ -138,26 +124,19 @@ def join():
     flash(f"You joined the queue. Your ticket is {ticket.priority_type}-{ticket.ticket_number:03d}.", "success")
     return redirect(url_for("ticket", ticket_id=ticket.id))
 
-
 @app.get("/queue/<int:ticket_id>")
 def ticket(ticket_id):
     t = db.get_or_404(Ticket, ticket_id)
     position = waiting_position_for_ticket(t)
-    
-    # If position is None (not waiting), ahead is 0
     ahead = (position - 1) if position is not None else 0
-    
     return render_template("ticket.html", ticket=t, service=t.service, ahead=ahead, position=position)
 
 @app.get("/queue/<int:ticket_id>/status.json")
 def ticket_status(ticket_id):
     t = db.get_or_404(Ticket, ticket_id)
     position = waiting_position_for_ticket(t)
-    
-    # If not waiting, return status with 0 ahead
     if position is None:
         return {"status": t.status, "ahead": 0, "position": None}
-        
     return {"status": t.status, "ahead": position - 1, "position": position}
 
 @app.post("/queue/<int:ticket_id>/leave")
@@ -169,8 +148,6 @@ def leave_queue(ticket_id):
         flash("You have left the queue.", "info")
     return redirect(url_for("index"))
 
-
-# FIXED: Changed /remind to /reminder to match ticket.html
 @app.post("/queue/<int:ticket_id>/reminder")
 def update_reminder(ticket_id):
     t = db.get_or_404(Ticket, ticket_id)
@@ -183,10 +160,8 @@ def update_reminder(ticket_id):
     else:
         t.remind_ahead = remind_ahead
         db.session.commit()
-        # FIXED: Lowercase "success"
         flash("Reminder preference saved", "success")
     return redirect(url_for("ticket", ticket_id=ticket_id))
-
 
 @app.get("/staff")
 def staff_dashboard():
@@ -196,7 +171,6 @@ def staff_dashboard():
         stmt = stmt.where(Ticket.service_id == service_id)
 
     stmt = stmt.order_by(*queue_order_clause())
-
     queue = db.session.scalars(stmt).all()
     services = all_services()
 
@@ -237,6 +211,45 @@ def staff_action(ticket_id, action):
     flash(f"Ticket updated to {t.status}.", "info")
     return redirect(url_for("staff_dashboard", service_id=service_id) if service_id is not None else url_for("staff_dashboard"))
 
+@app.post("/staff/tickets/<int:ticket_id>/delete")
+def delete_ticket(ticket_id):
+    t = db.get_or_404(Ticket, ticket_id)
+    db.session.delete(t)  # hard delete: the row is gone for good
+    db.session.commit()
+    flash(f"Ticket #{ticket_id} was deleted.", "warning")
+    return redirect(url_for("staff_dashboard"))
+
+@app.get("/staff/services")
+def services_list():
+    services = db.session.scalars(db.select(Service).order_by(Service.service_name)).all()
+    return render_template("services.html", services=services)
+
+@app.post("/staff/services")
+def service_create():
+    name = request.form.get("name", "").strip()
+    minutes = request.form.get("avg_minutes", type=int)
+    if not name or len(name) > 60 or not minutes or minutes <= 0:
+        flash("Enter a name (up to 60 characters) and minutes greater than 0.", "danger")
+        return redirect(url_for("services_list"))
+    db.session.add(Service(service_name=name, avg_minutes=minutes))
+    try:
+        db.session.commit()
+        flash(f"Service '{name}' added.", "success")
+    except IntegrityError:
+        db.session.rollback()
+        flash(f"A service named '{name}' already exists.", "danger")
+    return redirect(url_for("services_list"))
+
+@app.post("/staff/services/<int:service_id>/delete")
+def service_delete(service_id):
+    s = db.get_or_404(Service, service_id)
+    if s.tickets:
+        flash(f"'{s.service_name}' has tickets, so it cannot be deleted. Turn it off instead.", "danger")
+        return redirect(url_for("services_list"))
+    db.session.delete(s)
+    db.session.commit()
+    flash(f"Service '{s.service_name}' deleted.", "warning")
+    return redirect(url_for("services_list"))
 
 @app.cli.command("seed")
 def seed():
@@ -253,7 +266,6 @@ def seed():
             db.session.add(Service(service_name=name, avg_minutes=minutes))
     db.session.commit()
     print("Services are ready.")
-
 
 if __name__ == "__main__":
     app.run(debug=True)

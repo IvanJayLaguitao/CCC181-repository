@@ -156,6 +156,10 @@
                             <button class="btn btn-sm btn-success">Serve</button>
                           </form>
                         {% endif %}
+                        <form method="post" action="{{ url_for('delete_ticket', ticket_id=item.id) }}" data-confirm="Delete ticket {{ item.id }}? This cannot be undone.">
+                          {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
+                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                        </form>
                       </div>
                     </td>
                   </tr>
