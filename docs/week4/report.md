@@ -115,7 +115,7 @@ Referenced by:
 | Create: join the queue | `/join` | FR-01 | ![Create](screenshot/create.png) |
 | Read: staff dashboard | `/staff` | FR-03 | ![Read](screenshot/read.png) |
 | Update: call or serve a ticket | `/staff/tickets/<id>/<action>` | FR-04 | ![Update](screenshot/update.png) |
-| Soft delete: leave the queue | `/queue/<id>/leave` | FR-05 | ![Soft delete](screenshot/soft-delete.png) |
+| Soft delete: No-show | `/queue/<id>/leave` | FR-04 | ![Soft delete](screenshot/soft-delete.png) |
 | Hard delete: delete a ticket | `/staff/tickets/<id>/delete` | FR-06 | ![Hard delete](screenshot/hard-delete.png) |
 
 ## Validation

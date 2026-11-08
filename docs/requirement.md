@@ -17,9 +17,9 @@
 | FR-03 | A staff member can call the next waiting ticket for a service. | Must | **Yes** | Built (Week 4) |
 | FR-04 | A staff member can mark a called ticket as served or no-show. | Must | **Yes** | Built (Week 4) |
 | FR-05 | A student can leave the queue before being called. | Must | **Yes** | Built (Week 4) |
-| FR-06 | A staff member can add, rename and switch off a service. | Must | **Yes** | Built (Week 4) |
+| FR-06 | A staff member can delete or maked as no-show a ticket. | Must | **Yes** | Built (Week 4) |
 | FR-07 | A staff member can see how many people left before being served, per service, per day. | Should | **Yes** | Later |
-| FR-08 ★ | A senior citizen or person with a disability can join a priority lane that is served first. | Should | **Yes** | Built (Week 4) |
+| FR-08 ★ | A senior citizen or person with a disability can join a priority lane that is confirmed first. | Should | **Yes** | Built (Week 4) |
 | FR-09 ★ | A student can request priority status for PWD or Other reason when joining. | Must | **Yes** | Built (Week 4) |
 | FR-10 ★ | A staff member can confirm or reject a priority request. | Must | **Yes** | Built (Week 4) |
 | FR-11 | A student/user can switch the page to a larger text size. | Could | No | Later |

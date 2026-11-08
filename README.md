@@ -5,10 +5,10 @@ clinic. Patients can request a clinic service, receive a queue ticket, and check
 their status and position from a ticket page. Clinic staff can review the active
 queue, handle priority requests, and update ticket statuses from a dashboard.
 
-This is a coursework prototype, not a production clinic system. Tickets are
-stored in memory, so changes are lost when the app restarts.
+This is a coursework prototype, not a production clinic system.
 
-
+**Week 4 update:** The app now uses a PostgreSQL database running in Docker.
+Tickets, users, and services are saved permanently and survive server restarts.
 
 ## What the app does
 
@@ -16,19 +16,21 @@ stored in memory, so changes are lost when the app restarts.
   Response, Medical Certificate, Dental Services, or Laboratory Tests.
 - Validates the patient's name, reason for visit, service, priority category,
   and `@msuiit.edu` email address before creating a ticket.
-- Issues sequential ticket numbers with an `N-` prefix for normal requests and
-  a `P-` prefix for priority requests.
-- Shows the ticket's service and status, along with the number of earlier
-  waiting tickets for that service. The ticket page polls for status and
-  position updates every ten seconds.
-- Lets patients set a reminder threshold and leave the queue. The threshold is
-  saved as a preference, but the prototype does not send notifications.
+- Issues sequential ticket numbers (for example `N-001` and `P-002`) that reset
+  daily, with an `N-` prefix for normal requests and a `P-` prefix for priority
+  requests.
+- Shows the ticket's service and status, the number of people ahead, and an
+  estimated wait time based on the service's average duration. The ticket page
+  polls for status and position updates every ten seconds.
+- Lets patients set a reminder threshold and leave the queue (soft delete). The
+  threshold is saved as a preference, but the prototype does not send
+  notifications.
 - Gives clinic staff a service filter, waiting counts, and controls to call,
   serve, or mark tickets as no-shows. Staff can confirm or decline priority
-  requests; confirmed priority tickets are ordered first.
-
-The app starts with four sample tickets in `app.py` so the queue and staff
-dashboard have data to demonstrate.
+  requests; confirmed priority tickets automatically move to the top of the
+  queue.
+- Includes a "Manage Services" page where staff can add, rename, or deactivate
+  clinic services.
 
 ## Routes
 
@@ -37,12 +39,13 @@ dashboard have data to demonstrate.
 | `GET` | `/` | Home page with a link to join the queue |
 | `GET` | `/join` | Display the patient registration form |
 | `POST` | `/join` | Validate the form, create a ticket, and redirect to it |
-| `GET` | `/queue/<ticket_id>` | Display a ticket's status and queue position |
-| `GET` | `/queue/<ticket_id>/status.json` | Return the ticket status and number of people ahead |
-| `POST` | `/queue/<ticket_id>/leave` | Mark a waiting ticket as a no-show |
+| `GET` | `/queue/<ticket_id>` | Display a ticket's status, queue position, and wait time |
+| `GET` | `/queue/<ticket_id>/status.json` | Return the live ticket status and number of people ahead |
+| `POST` | `/queue/<ticket_id>/leave` | Mark a waiting ticket as left (soft delete) |
 | `POST` | `/queue/<ticket_id>/reminder` | Save the ticket's reminder threshold |
 | `GET` | `/staff` | Display the staff dashboard; optionally filter with `service_id` |
-| `POST` | `/staff/tickets/<ticket_id>/<action>` | Apply a staff action: `call`, `serve`, `no-show`, `confirm-priority`, or `reject-priority` |
+| `POST` | `/staff/tickets/<ticket_id>/<action>` | Apply a staff action: `call`, `serve`, `no-show`, `confirm-priority`, `reject-priority`, or `delete` |
+| `GET` | `/staff/services` | Manage clinic services (add, edit, deactivate) |
 
 Unknown ticket IDs return a 404. Invalid status transitions and repeated
 priority decisions return a 409.
@@ -51,14 +54,20 @@ priority decisions return a 409.
 
 ```text
 CCC181-repository/
-├── app.py                         # Flask app, sample data, routes, and queue logic
+├── app.py                         # Flask app, routes, and queue logic
+├── models.py                      # SQLAlchemy database models
+├── compose.yaml                   # Docker configuration for PostgreSQL
+├── .env.example                   # Template for environment variables
+├── .env                           # Local secrets (NOT committed to Git)
 ├── requirements.txt               # Python dependencies
 ├── .gitignore                     # Files excluded from Git
+├── migrations/                    # Database migration scripts
 ├── templates/
 │   ├── base.html                  # Shared page layout and navigation
 │   ├── index.html                 # Home page
 │   ├── join.html                  # Patient registration form
 │   ├── staff.html                 # Staff queue dashboard
+│   ├── services.html              # Manage services page
 │   └── ticket.html                # Patient ticket and live status display
 ├── static/
 │   ├── css/style.css              # App styles
@@ -70,15 +79,49 @@ CCC181-repository/
 │   ├── git-exercises/             # CCC181 Git exercise materials
 │   └── proposed-application/      # Project proposal materials
 └── docs/
-    └── week3/                     # Interface report, research, and design assets
+    ├── requirements.md            # Living list of project requirements
+    ├── week3/                     # Interface report, research, and design assets
+    └── week4/                     # Database schema, ERD, and report
 ```
 
 ## Run locally
 
+### 1. Start the database
+
+Make sure Docker Desktop is running, then start the PostgreSQL container:
+
 ```powershell
+docker compose up -d
+```
+
+Wait until the container reports `healthy`:
+
+```powershell
+docker compose ps
+```
+
+### 2. Set up the environment
+
+Copy `.env.example` to `.env` and fill in your values, then install the
+dependencies:
+
+```powershell
+Copy-Item .env.example .env
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -r requirements.txt
+```
+
+### 3. Build the database tables
+
+```powershell
+flask --app app db upgrade
+flask --app app seed
+```
+
+### 4. Run the app
+
+```powershell
 flask --app app run --debug
 ```
 
@@ -87,16 +130,15 @@ do not use it in production.
 
 ## Prototype limitations
 
-- Queue data and ticket changes live only in the Python process; there is no
-  database or durable storage.
 - The staff dashboard has no authentication, so anyone who can access the app
   can use its staff controls.
-- Reminder thresholds are stored but do not trigger notifications.
-- The app uses seeded demonstration patients and a development-only Flask
-  secret key. It is not ready for real patient information or production use.
+- Reminder thresholds are stored but do not trigger notifications, push
+  messages, or SMS.
+- The app uses a development-only Flask secret key. It is not ready for real
+  patient information or production use.
 
-> **Staff access is currently open:** the `/staff` dashboard has no login protection yet. Staff authentication will be added in Week 11.
-
+> **Staff access is currently open:** the `/staff` dashboard has no login protection yet. 
 
 ## Requirements
+
 See [docs/requirements.md](docs/requirements.md) for the full list of functional and non-functional requirements.
