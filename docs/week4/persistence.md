@@ -1,8 +1,8 @@
 # Persistence Test
 
 ## 11a. Restart Test
-I created 5 tickets, called one, served one, and marked one as a no-show. 
-After stopping Docker and Flask, and restarting them, all 5 tickets, statuses, and timestamps were exactly as before. This proves NFR-01 passed.
+I created 6 tickets, called one, served one, marked one as a no-show, and 1 ticket left the queue. 
+After stopping Docker and Flask, and restarting them, all 6 tickets, statuses, and timestamps were exactly as before. This proves NFR-01 passed.
 
 **Before Restart:**
 ![Before restart](screenshot/before_restart.png)

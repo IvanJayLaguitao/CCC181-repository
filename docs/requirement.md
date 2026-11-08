@@ -2,7 +2,6 @@
 
 ## 1a. Describe your setting and the problem
 
-
 **Setting:** MSU-IIT University clinic, weekday mornings and afternoons.
 **People who wait:** Students and faculty needing checkups or certificates. See *Mark* in [docs/week3/personas.md](week3/personas.md).
 **People who serve:** Clinic staff and student assistants managing the queue. See *Leo* in [docs/week3/personas.md](week3/personas.md).
@@ -13,17 +12,18 @@
 
 | ID | Requirement | Priority | Stores data? | Status |
 | --- | --- | --- | --- | --- |
-| FR-01 | A student can join the queue for a service by entering their name and email. | Must | **Yes** | Built (Week 3) |
-| FR-02 | A student can see their ticket number, status, and how many people are ahead of them. | Must | **Yes** | Built (Week 3) |
-| FR-03 | A staff member can call the next waiting ticket for a service. | Must | **Yes** | Built (Week 3) |
-| FR-04 | A staff member can mark a called ticket as served or no-show. | Must | **Yes** | Built (Week 3) |
-| FR-05 | A student can leave the queue before being called. | Must | **Yes** | Built (Week 3) |
-| FR-06 | A staff member can add, rename and switch off a service. | Must | **Yes** | This week |
+| FR-01 | A student can join the queue for a service by entering their name and email. | Must | **Yes** | Built (Week 4) |
+| FR-02 | A student can see their ticket number, status, and how many people are ahead of them. | Must | **Yes** | Built (Week 4) |
+| FR-03 | A staff member can call the next waiting ticket for a service. | Must | **Yes** | Built (Week 4) |
+| FR-04 | A staff member can mark a called ticket as served or no-show. | Must | **Yes** | Built (Week 4) |
+| FR-05 | A student can leave the queue before being called. | Must | **Yes** | Built (Week 4) |
+| FR-06 | A staff member can add, rename and switch off a service. | Must | **Yes** | Built (Week 4) |
 | FR-07 | A staff member can see how many people left before being served, per service, per day. | Should | **Yes** | Later |
-| FR-08 ★ | A senior citizen or person with a disability can join a priority lane that is served first. | Should | **Yes** | This week |
-| FR-09 ★ | A student can request priority status for PWD or Senior Citizen when joining. | Must | **Yes** | This week |
-| FR-10 ★ | A staff member can confirm or reject a priority request. | Must | **Yes** | This week |
+| FR-08 ★ | A senior citizen or person with a disability can join a priority lane that is served first. | Should | **Yes** | Built (Week 4) |
+| FR-09 ★ | A student can request priority status for PWD or Other reason when joining. | Must | **Yes** | Built (Week 4) |
+| FR-10 ★ | A staff member can confirm or reject a priority request. | Must | **Yes** | Built (Week 4) |
 | FR-11 | A student/user can switch the page to a larger text size. | Could | No | Later |
+| FR-12 | A student can see if the clinic is currently open or closed. | Could | No | Later |
 
 ## 1c. Non-functional requirements
 
@@ -50,3 +50,5 @@ This is the smallest version that solves the problem: students can join, view th
 | Student | "I also want to know if the clinic is currently open or closed before I walk there or join." | Added a *Could* requirement for clinic status (FR-12). |
 | Clinic staff member | "We need to know if a priority ticket was a Senior or a PWD so we can prepare the right assistance." | Added a `priority_reason` field to the tickets table (FR-08, FR-09). |
 
+---
+*For the database schema that supports these requirements, see [week4/schema.md](week4/schema.md).*

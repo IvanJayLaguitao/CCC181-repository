@@ -80,7 +80,6 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .btn-close {
   min-width: 44px;
 }
-
 .alert-dismissible .btn-close {
   top: 50%;
   transform: translateY(-50%);
@@ -183,16 +182,17 @@ code { background: #ECE8DE; padding: 0 0.3rem; border-radius: 4px; }
 .ticket-cancel {
   width: 100%;
   padding: 0.65rem;
-  background: #747474;
+  background: var(--navy);
+  color: white;             
   border: 2px solid var(--navy);
   font-weight: 700;
 }
 
 .ticket-cancel:hover {
-  background: #5B2420;
+  background: #0f1829;      
+  color: white;
   border-color: var(--navy);
 }
-
 .staff-main-container {
   max-width: 1320px !important;
 }
@@ -521,23 +521,23 @@ footer {
 
 .btn-secondary,
 .ticket-cancel {
-  --bs-btn-color: var(--navy-deep);
-  --bs-btn-bg: var(--navy-soft);
-  --bs-btn-border-color: #B9C9DA;
-  --bs-btn-hover-color: var(--navy-deep);
-  --bs-btn-hover-bg: #D9E4EF;
-  --bs-btn-hover-border-color: #9FB4CA;
+  --bs-btn-color: white;
+  --bs-btn-bg: var(--navy);
+  --bs-btn-border-color: var(--navy);
+  --bs-btn-hover-color: white;
+  --bs-btn-hover-bg: #0f1829; /* Darker blue on hover */
+  --bs-btn-hover-border-color: #0f1829;
 }
 
 .ticket-cancel {
-  color: var(--navy-deep);
-  background: var(--navy-soft);
-  border-color: #B9C9DA;
+  color: white;
+  background: var(--navy);
+  border-color: var(--navy);
 }
 
 .ticket-cancel:hover {
-  background: #D9E4EF;
-  border-color: #9FB4CA;
+  background: #0f1829;
+  border-color: #0f1829;
 }
 
 .btn-outline-secondary {

@@ -11,7 +11,7 @@
 | FR-05 | A student can **leave the queue** before being called. | status | tickets.status |
 | FR-06 | A staff member can add, rename and **switch off** a **service**. | service, active status | services.service_name, services.active |
 | FR-08 | A senior citizen or person with a disability can join a **priority lane**. | priority, reason | tickets.priority_type, tickets.priority_reason |
-| FR-09 | A student can request **priority status** (PWD/Senior). | priority, reason | tickets.priority_type, tickets.priority_reason |
+| FR-09 | A student/staff/faculty can request **priority status** (PWD/Senior/other reasons). | priority, reason | tickets.priority_type, tickets.priority_reason |
 | FR-10 | A staff member can **confirm** or **reject** a priority request. | priority confirmed | tickets.priority_type, tickets.priority_reason |
 
 **Two rules from the lecture:**

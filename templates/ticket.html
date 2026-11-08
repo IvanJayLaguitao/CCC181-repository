@@ -26,7 +26,12 @@
           {% if ticket.status == "waiting" and ahead == 0 %}
             You're next!
           {% elif ticket.status == "waiting" %}
-            {{ ahead }} {{ "person" if ahead == 1 else "people" }} ahead of you
+            {{ ahead }} {{ "person" if ahead == 1 else "people" }} ahead of you 
+            <br>
+            <span class="text-muted fs-6">
+              Estimated wait: {{ est_wait }} mins <br> 
+              (Ready around {{ ready_time }})
+            </span>
           {% else %}
             Queue position is no longer available
           {% endif %}
@@ -35,22 +40,32 @@
 
       {% if ticket.status == "waiting" %}
         <div id="ticket-actions">
-          <!-- Show the form, JS will hide it if ahead is 0 -->
-          <form class="ticket-reminder" method="post" action="{{ url_for('update_reminder', ticket_id=ticket.id)}}" {% if ahead == 0 %}style="display: none;"{% endif %}>
-            <label for="remind-ahead">
-              Remind me when
-              <input id="remind-ahead" name="remind_ahead" type="number" min="0" value="{{ ticket.remind_ahead }}" required>
-              {{ "patient is" if ticket.remind_ahead == 1 else "patients are" }} ahead of me
-            </label>
-            <button class="btn btn-primary ticket-reminder__save" type="submit">
-                Save reminder
-            </button>
-          </form>
+          
+         <form class="ticket-reminder d-flex flex-wrap align-items-center justify-content-center gap-2 mb-3 px-2" method="post" action="{{ url_for('update_reminder', ticket_id=ticket.id)}}">
+          <span class="text-nowrap">Remind me when</span>
+          <div class="d-flex align-items-center border rounded px-1 py-1 bg-white">
+            <button type="button" class="btn btn-sm btn-light fw-bold px-2" onclick="decrementReminder()">-</button>
+            <input id="remind-ahead" name="remind_ahead" type="number" min="1" value="{{ ticket.remind_ahead }}" required class="border-0 shadow-none text-center bg-transparent" style="width: 40px; -moz-appearance: textfield;" readonly>
+            <button type="button" class="btn btn-sm btn-light fw-bold px-2" onclick="incrementReminder()">+</button>
+          </div>
+          <span class="text-nowrap">patients ahead</span>
+          <button class="btn btn-primary btn-sm ms-sm-2" type="submit">Save</button>
+        </form>
+          <script>
+            function incrementReminder() {
+              const input = document.getElementById("remind-ahead");
+              input.value = parseInt(input.value) + 1;
+            }
+            function decrementReminder() {
+              const input = document.getElementById("remind-ahead");
+              if (parseInt(input.value) > 1) input.value = parseInt(input.value) - 1;
+            }
+          </script>
           
           <form method="post"
                 action="{{ url_for('leave_queue', ticket_id=ticket.id) }}"
                 data-confirm="Leave the queue? You will lose your place in line.">
-           <button class="btn btn-secondary ticket-cancel" type="submit">
+           <button class="btn btn-navy text-white w-100 ticket-cancel" type="submit">
             Leave the queue
            </button>   
           </form>
@@ -97,9 +112,17 @@
         aheadMessage.textContent = "You're next!";
         if (reminderForm) reminderForm.style.display = "none"; // Hide form
       } else {
-        aheadMessage.textContent = `${data.ahead} ${data.ahead === 1 ? "person" : "people"} ahead of you`;
+        aheadMessage.innerHTML = `
+        ${data.ahead} ${data.ahead === 1 ? "person" : "people"} ahead of you
+        <br>
+        <span class="text-mite fs-6"> Estimated wait: ${data.est_wait} mins <br> 
+          (Ready around ${data.ready_time})</span>
+        `;
         if (reminderForm) reminderForm.style.display = "block"; // Show form if it was hidden
+
       }
+
+      
     } catch (err) {
       console.warn("Could not refresh status", err);
     }

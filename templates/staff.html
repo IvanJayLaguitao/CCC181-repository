@@ -71,10 +71,17 @@
             {% endif %}
           </h2>
         </div>
+        
         {% if next_ticket %}
           <form method="post" action="{{ url_for('staff_action', ticket_id=next_ticket.id, action='call') }}">
             {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-            <button class="btn btn-primary staff-call-button">Call next</button>
+            
+            <!-- 👇 ADD THIS CONSTRAINT 👇 -->
+            <button class="btn btn-primary staff-call-button" 
+                    {% if current_ticket %}disabled title="Finish serving N-001 first"{% endif %}>
+              Call next
+            </button>
+            
           </form>
         {% else %}
           <button class="btn btn-primary staff-call-button" disabled>Call next</button>
@@ -126,41 +133,36 @@
                     <td>{{ item.service.service_name }}</td>
                     <td class="staff-reason-cell">{{ item.reason }}</td>
                     <td>
-                      <span class="badge staff-status-badge staff-status-{{ item.status }}">
+                      <span class="badge 
+                        {% if item.status == 'waiting' %}text-bg-warning
+                        {% elif item.status == 'called' %}text-bg-info
+                        {% elif item.status == 'served' %}text-bg-success
+                        {% elif item.status == 'no-show' %}text-bg-danger
+                        {% elif item.status == 'left' %}text-bg-secondary
+                        {% else %}text-bg-dark{% endif %}">
                         {{ item.status }}
                       </span>
                     </td>
                     <td>
-                      <div class="staff-row-actions">
-                      
-                        <!-- 👇 NEW: Confirm and Reject buttons 👇 -->
-                        {% if item.priority_type == "P" and not item.priority_confirmed and item.status == 'waiting' %}
-                          <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='confirm-priority') }}">
-                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-                            <button class="btn btn-sm btn-success">Confirm</button>
-                          </form>
-                          <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='reject-priority') }}" data-confirm="Reject priority for this ticket?">
-                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-                            <button class="btn btn-sm btn-outline-danger">Reject</button>
-                          </form>
-                        {% endif %}
-                      
-                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='no-show') }}" data-confirm="Mark ticket {{ item.id }} as a no-show?">
+                   <div class="staff-row-actions d-flex gap-2 flex-wrap">
+                      <!-- If Priority Request is pending, show Confirm/Reject -->
+                      {% if item.priority_type == "P" and not item.priority_confirmed and item.status == 'waiting' %}
+                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='confirm-priority') }}">
                           {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-                          <button class="btn btn-sm btn-outline-danger">No-show</button>
+                          <button class="btn btn-sm btn-primary">Confirm</button>
                         </form>
-                        
-                        {% if item.status == "called" %}
-                          <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='serve') }}">
-                            {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-                            <button class="btn btn-sm btn-success">Serve</button>
-                          </form>
-                        {% endif %}
-                        <form method="post" action="{{ url_for('delete_ticket', ticket_id=item.id) }}" data-confirm="Delete ticket {{ item.id }}? This cannot be undone.">
+                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='reject-priority') }}" data-confirm="Reject priority for ticket {{ item.id }}?">
                           {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
-                            <button class="btn btn-sm btn-outline-danger">Delete</button>
+                          <button class="btn btn-sm btn-outline-danger">Reject</button>
                         </form>
-                      </div>
+                      <!-- For ANY other status (waiting, called, left, no-show), just show Delete -->
+                      {% else %}
+                        <form method="post" action="{{ url_for('staff_action', ticket_id=item.id, action='delete') }}" data-confirm="Delete ticket {{ item.id }}?">
+                          {% if selected %}<input type="hidden" name="service_id" value="{{ selected }}">{% endif %}
+                          <button class="btn btn-sm btn-dark">Delete</button>
+                        </form>
+                      {% endif %}
+                    </div>
                     </td>
                   </tr>
                 {% endfor %}

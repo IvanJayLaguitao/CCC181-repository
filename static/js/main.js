@@ -1,31 +1,38 @@
 // Served at /static/js/main.js and linked from templates/base.html.
 console.log("KlinikaQ starter app loaded");
 
-document.addEventListener("submit", (event) => {
-  const confirmation = event.target.dataset.confirm;
-  if (confirmation && !window.confirm(confirmation)) {
-    event.preventDefault();
-  }
-}, true);
+document.addEventListener("DOMContentLoaded", () => {
+    const alerts = document.querySelectorAll(".alert");
+    alerts.forEach(alert => {
+        setTimeout(() => {
+            alert.classList.remove("show");
+            alert.classList.add("fade");
+            setTimeout(() => alert.remove(), 500); // Wait for transition
+        }, 5000); // 5 seconds
+    });
+});
 
-const joinForm = document.getElementById("join-form");
-if (joinForm) {
-  joinForm.addEventListener("submit", (event) => {
-    if (joinForm.dataset.submitting === "true") {
-      event.preventDefault();
-      return;
-    }
-
-    const button = joinForm.querySelector('button[type="submit"]');
-    if (!button) return;
-
-    joinForm.dataset.submitting = "true";
-    button.disabled = true;
-    button.textContent = "Getting your ticket…";
-  });
-}
 document.querySelectorAll("form[data-confirm]").forEach((form) => {
-  form.addEventListener("submit", (event) => {
-    if (!confirm(form.dataset.confirm)) event.preventDefault();
-  });
+    form.addEventListener("submit", (event) => {
+        if (!form.dataset.confirmed) {
+            event.preventDefault();
+            const message = form.dataset.confirm;
+            const modalBody = document.getElementById("confirmModalBody");
+            const modalBtn = document.getElementById("confirmModalBtn");
+            const modal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            
+            modalBody.textContent = message;
+            modal.show();
+            
+            // Remove previous event listeners to prevent multiple triggers
+            const newBtn = modalBtn.cloneNode(true);
+            modalBtn.parentNode.replaceChild(newBtn, modalBtn);
+            
+            newBtn.addEventListener("click", () => {
+                form.dataset.confirmed = "true";
+                modal.hide();
+                form.submit();
+            });
+        }
+    });
 });

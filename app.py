@@ -40,6 +40,8 @@ def queue_order_clause():
         Ticket.id.asc(),
     )
 
+
+
 def waiting_position_for_ticket(ticket):
     if ticket.status != "waiting":
         return None
@@ -63,6 +65,22 @@ def index():
 @app.get("/join")
 def join_form():
     return render_template("join.html", services=active_services(), form={})
+
+@app.get("/queue/<int:ticket_id>")
+def ticket(ticket_id):
+    t = db.get_or_404(Ticket, ticket_id)
+    position = waiting_position_for_ticket(t)
+
+    if position is not None:
+        ahead = (position - 1)  
+    else: 
+        ahead = 0
+    est_wait = ahead * t.service.avg_minutes
+
+    ready_time = datetime.now() + timedelta(minutes=est_wait)
+    ready_time_str = ready_time.strftime("%I:%M %p")
+
+    return render_template("ticket.html", ticket=t, service=t.service, ahead=ahead, position=position, est_wait=est_wait, ready_time=ready_time_str)
 
 @app.post("/join")
 def join():
@@ -124,20 +142,22 @@ def join():
     flash(f"You joined the queue. Your ticket is {ticket.priority_type}-{ticket.ticket_number:03d}.", "success")
     return redirect(url_for("ticket", ticket_id=ticket.id))
 
-@app.get("/queue/<int:ticket_id>")
-def ticket(ticket_id):
-    t = db.get_or_404(Ticket, ticket_id)
-    position = waiting_position_for_ticket(t)
-    ahead = (position - 1) if position is not None else 0
-    return render_template("ticket.html", ticket=t, service=t.service, ahead=ahead, position=position)
-
 @app.get("/queue/<int:ticket_id>/status.json")
 def ticket_status(ticket_id):
     t = db.get_or_404(Ticket, ticket_id)
     position = waiting_position_for_ticket(t)
+
     if position is None:
-        return {"status": t.status, "ahead": 0, "position": None}
-    return {"status": t.status, "ahead": position - 1, "position": position}
+        return {"status": t.status, "ahead": 0, "position": None, "est_wait": 0}
+    
+    ahead = position - 1
+    est_wait = ahead * t.service.avg_minutes
+
+    ready_time = datetime.now(PH_TIME) + timedelta(minutes=est_wait)
+    ready_time_str = ready_time.strftime("%I:%M %p")
+
+
+    return {"status": t.status, "ahead": ahead, "position": position, "est_wait": est_wait, "ready_time": ready_time_str}
 
 @app.post("/queue/<int:ticket_id>/leave")
 def leave_queue(ticket_id):
@@ -166,11 +186,17 @@ def update_reminder(ticket_id):
 @app.get("/staff")
 def staff_dashboard():
     service_id = request.args.get("service_id", type=int)
-    stmt = db.select(Ticket).where(Ticket.status.in_(["waiting", "called"]))
+    stmt = db.select(Ticket).where(Ticket.status.in_(["waiting", "called", "left", "no-show"]))
+    
     if service_id is not None:
         stmt = stmt.where(Ticket.service_id == service_id)
 
-    stmt = stmt.order_by(*queue_order_clause())
+    active_first = case(
+        (Ticket.status.in_(["waiting", "called"]), 0),
+        else_=1
+    )
+
+    stmt = stmt.order_by(active_first, *queue_order_clause())
     queue = db.session.scalars(stmt).all()
     services = all_services()
 
@@ -178,6 +204,7 @@ def staff_dashboard():
     current_ticket = next((t for t in queue if t.status == "called"), None)
 
     return render_template("staff.html", queue=queue, services=services, selected=service_id, next_ticket=next_ticket, current_ticket=current_ticket)
+
 
 @app.post("/staff/tickets/<int:ticket_id>/<action>")
 def staff_action(ticket_id, action):
